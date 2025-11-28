@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Header styles */
-.site-header{position:fixed;top:0;left:0;right:0;height:64px;background:var(--card);display:flex;align-items:center;box-shadow:0 2px 8px rgba(15,23,42,0.06);z-index:100}
-.site-container{width:100%;max-width:1100px;margin:0 auto;padding:0 1rem;display:flex;align-items:center}
+/* Fallback header styles (works even if Tailwind utilities aren't loaded) */
+.site-header{position:fixed;top:0;left:0;right:0;height:100px;background:var(--card);display:flex;align-items:center;box-shadow:0 2px 8px rgba(15,23,42,0.06);z-index:100}
+.site-container{width:100%;max-width:1100px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;justify-content:space-between}
 .site-title{font-size:1.125rem;font-weight:700;margin:0;color:var(--text)}
+.site-container nav a{color:#1f2937;text-decoration:none}
+.site-container nav a + a{margin-left:1rem}
 
 /* Push page content below the fixed header */
 .page-content{padding-top:80px}

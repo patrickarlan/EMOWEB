@@ -1,19 +1,19 @@
 import React from "react";
 import Header from "./components/header";
+import LandingPage from "./main/landingpage";
+import Footer from "./components/footer";
+import "./styles/styles.css";
 
 export default function App() {
   return (
-    <>
+    <div className="app-root">
       <Header />
+
       <main className="page-content">
-        <div className="app">
-          <header className="app-header">
-            <h1>Welcome to Vite + React</h1>
-            <p className="lead">A minimal starter (no template)</p>
-            <button className="btn">Click me</button>
-          </header>
-        </div>
+        <LandingPage />
       </main>
-    </>
+
+      <Footer />
+    </div>
   );
 }

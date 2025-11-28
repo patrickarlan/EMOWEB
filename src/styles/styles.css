@@ -8,3 +8,6 @@ html,body,#root{height:100%;margin:0;font-family:Inter, system-ui, -apple-system
 .app-header{background:var(--card);padding:2rem;border-radius:12px;box-shadow:0 8px 30px rgba(15,23,42,0.06);text-align:center;min-width:260px}
 .lead{color:#475569;margin-top:0.25rem}
 .btn{margin-top:1rem;padding:0.5rem 1rem;background:var(--accent);color:#fff;border:0;border-radius:8px;cursor:pointer}
+
+
+

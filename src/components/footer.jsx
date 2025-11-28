@@ -1,9 +1,9 @@
 import React from "react";
-import "../styles/header.css";
+import "../styles/footer.css";
 
-export default function Header() {
+export default function Footer() {
   return (
-    <header className="site-header">
+    <footer className="site-footer">
       <div className="site-container">
         <h1 className="site-title">EMOWEB</h1>
         <nav className="flex items-center gap-4">
@@ -12,6 +12,6 @@ export default function Header() {
           <a href="#" className="text-sm text-gray-700 hover:text-gray-900">Contact</a>
         </nav>
       </div>
-    </header>
+    </footer>
   );
 }
