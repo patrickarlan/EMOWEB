@@ -2,18 +2,21 @@ import React from "react";
 import Header from "./components/header";
 import LandingPage from "./main/landingpage";
 import Footer from "./components/footer";
+import ErrorBoundary from "./components/ErrorBoundary";
 import "./styles/styles.css";
 
 export default function App() {
   return (
     <div className="app-root">
-      <Header />
+      <ErrorBoundary>
+        <Header />
 
-      <main className="page-content">
-        <LandingPage />
-      </main>
+        <main className="page-content">
+          <LandingPage />
+        </main>
 
-      <Footer />
+        <Footer />
+      </ErrorBoundary>
     </div>
   );
 }

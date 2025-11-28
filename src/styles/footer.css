@@ -7,6 +7,109 @@
 .page-content{flex:1}
 
 /* Footer styling */
-.site-footer{background:var(--card);padding:1rem 0}
-.site-footer .site-container{display:flex;align-items:center;justify-content:space-between}
+.site-footer{
+	background:var(--card);
+	padding:1rem 0;
+	height:80px;
+	box-shadow:0 -2px 8px rgba(15,23,42,0.06);
+	overflow:visible; /* ensure absolutely positioned title is not clipped */
+	position:relative;
+}
+
+.site-footer .site-container{
+	position:relative;
+	max-width:1100px;
+	margin:0 auto;
+	padding:0 1rem;
+	height:100%;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+
+
+/* Center nav and keep links inline (stacked next to each other) */
+.footer-nav{
+	/* Stack nav links in a vertical column and center them */
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	gap:0.5rem;
+	width:100%;
+}
+
+.footer-link{
+	font-size:0.9rem;
+	color:var(--muted-text, #4b5563);
+	text-decoration:none;
+	padding:0.25rem 0.35rem;
+}
+.footer-link:hover{color:var(--text, #0f172a)}
+
+/* Small-screen adjustments */
+@media (max-width:480px){
+	.site-title{left:0.6rem; bottom:0.4rem; font-size:0.95rem}
+	.site-title-footer{left:0.6rem; bottom:0.4rem; font-size:0.95rem}
+}
+
+/* Site title bottom-left (matches class in footer.jsx) */
+.site-title-footer{
+	position:absolute;
+	left:0; /* flush to the page edge */
+	bottom:0.75rem; /* keep a small gap from the footer edge */
+	margin:0;
+	padding-left:0.75rem; /* small breathing room from very edge */
+	font-size:1rem;
+	font-weight:700;
+    	z-index:6;
+}
+
+/* Optional: if you want the title to stick to the viewport bottom-left (always visible),
+   add the class `fixed` to the element in `footer.jsx` (e.g. className="site-title-footer fixed`). */
+/* remove fixed positioning; title is positioned absolutely inside the footer */
+
+/* Social links pinned to bottom-right */
+.social-links{
+	position:absolute; /* positioned inside footer */
+	right:0; /* flush to the page edge */
+	bottom:0.75rem;
+	padding-right:0.75rem; /* small breathing room from edge */
+	display:flex;
+	gap:0.5rem;
+	align-items:center;
+	z-index:6;
+}
+.social-link{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	width:36px;
+	height:36px;
+	padding:0;
+	font-size:0.85rem;
+	color:var(--muted-text, #4b5563);
+	background:transparent;
+	border-radius:0.375rem;
+	text-decoration:none;
+}
+.social-link:hover{
+	background:rgba(15,23,42,0.06);
+	color:var(--text, #0f172a);
+	transform:translateY(-2px);
+	transition:transform .12s ease, background .12s ease, color .12s ease;
+}
+/* bootstrap icon sizing inside the button */
+.social-link i{ font-size:16px; line-height:1; display:inline-block }
+
+@media (max-width:768px){
+	/* Slightly increase spacing on medium-small screens */
+	.footer-nav{gap:0.85rem}
+}
+
+@media (max-width:480px){
+	/* move social links slightly inward on very small screens */
+	.social-links{right:0.6rem; bottom:0.6rem; gap:0.35rem}
+	.site-title-footer{padding-left:0.6rem}
+}
 

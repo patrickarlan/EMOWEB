@@ -3,12 +3,74 @@
 @tailwind utilities;
 
 .landing-panel{
-    width:100%;
-    height: 800px;
+    flex:1 1 0;
+    height:800px;
     max-width:960px;
-    margin:0 auto; /* horizontal centering; vertical centering handled by parent (flex) */
     display:flex;
-    background:#ffffff; /* use white panel */
+    background:#ffffff;
     border-radius:0.5rem;
     box-shadow:0 10px 30px rgba(2,6,23,0.08);
+}
+
+/* legacy .side-panels removed - using .left-stack instead */
+
+.side-panel{
+    background: #556891; /* blue background */
+    color:#ffffff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:1rem;
+    border-radius:0.5rem;
+}
+
+/* New wrapper and left-stack layout: left column of 3 stacked panels beside main landing panel */
+.landing-wrapper{
+    display:flex;
+    gap:1.5rem; /* gap between left stack and landing panel */
+    align-items:flex-start;
+    width:100%;
+    max-width:1200px;
+}
+
+.left-stack{
+    width:260px; /* fixed column width for the 3 panels */
+    height:800px; /* match landing-panel height so panels visually align */
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+}
+
+.left-stack .side-panel{
+    flex:1; /* each panel takes equal height inside the left-stack */
+    border-radius:0.5rem; /* same rounding for visual continuity */
+    transform: translateZ(0);
+    will-change: transform;
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms cubic-bezier(.2,.9,.2,1);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Keep child text rendering sharp during transforms */
+.left-stack .side-panel,
+.left-stack .side-panel * {
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    backface-visibility: hidden;
+}
+
+.left-stack .side-panel:hover{
+    transform: translateZ(0) scale(1.035);
+    box-shadow: 0 18px 40px rgba(2,6,23,0.12);
+}
+
+
+/* landing-panel is defined above (flex:1 and height) */
+
+/* Responsive: stack vertically on small screens */
+@media (max-width: 768px){
+    .landing-wrapper{flex-direction:column; align-items:stretch;}
+    .left-stack{width:100%; height:auto; flex-direction:row;}
+    .left-stack .side-panel{flex:1; height:120px;}
+    .landing-panel{height:auto;}
 }

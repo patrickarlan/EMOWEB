@@ -3,11 +3,91 @@
 @tailwind utilities;
 
 /* Fallback header styles (works even if Tailwind utilities aren't loaded) */
-.site-header{position:fixed;top:0;left:0;right:0;height:100px;background:var(--card);display:flex;align-items:center;box-shadow:0 2px 8px rgba(15,23,42,0.06);z-index:100}
-.site-container{width:100%;max-width:1100px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;justify-content:space-between}
-.site-title{font-size:1.125rem;font-weight:700;margin:0;color:var(--text)}
-.site-container nav a{color:#1f2937;text-decoration:none}
-.site-container nav a + a{margin-left:1rem}
+.site-header{
+	position:relative;
+	height:100px;
+	background:var(--card);
+	display:flex;
+	align-items:center;
+	box-shadow:0 2px 8px rgba(15,23,42,0.06);
+	z-index:100;
+}
+
+/* title flushed to left edge */
+.site-title{
+	position:absolute;
+	left:0;
+	padding-left:0.75rem;
+	margin:0;
+	font-size:1.125rem;
+	font-weight:700;
+	color:var(--text);
+}
+
+.site-container{
+	width:100%;
+	max-width:1100px;
+	margin:0 auto;
+	padding:0 1rem;
+	height:100%;
+	display:flex;
+	align-items:center;
+	justify-content:center; /* center nav */
+}
+
+/* Header nav uses grid: columns on wide screens, stacks into rows on smaller screens */
+.header-nav{
+	display:grid;
+	grid-auto-flow:column;
+	grid-auto-columns:auto;
+	gap:1.5rem;
+	justify-content:center;
+	align-items:center;
+}
+
+.nav-link{ color:#1f2937; text-decoration:none; font-size:0.95rem }
+.nav-link + .nav-link{ margin-left:0 }
 
 /* Push page content below the fixed header */
-.page-content{padding-top:80px}
+.page-content{ padding-top:0 }
+
+@media (max-width:768px){
+	.header-nav{ grid-auto-flow:row; gap:1rem }
+}
+
+/* Right-side header controls (search + profile) */
+.header-controls{
+	position:absolute;
+	right:0;
+	top:50%;
+	transform:translateY(-50%);
+	display:flex;
+	gap:0.5rem;
+	padding-right:0.75rem; /* match site-title padding */
+	align-items:center;
+}
+
+.search-button,
+.profile-button{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	width:36px;
+	height:36px;
+	padding:0;
+	border-radius:0.375rem;
+	background:transparent;
+	border:0;
+	cursor:pointer;
+	color:var(--muted-text, #374151);
+}
+.search-button:hover,
+.profile-button:hover{ background:rgba(15,23,42,0.04); color:var(--text); transform:translateY(-1px); }
+
+/* profile placeholder circle when no image provided */
+.profile-button svg{ border-radius:9999px; }
+
+@media (max-width:480px){
+	.header-controls{ padding-right:0.5rem }
+	.search-button,.profile-button{ width:32px;height:32px }
+}
