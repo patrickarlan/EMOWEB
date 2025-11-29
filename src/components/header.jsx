@@ -1,10 +1,17 @@
 import React from "react";
+import logo from "../pics/emoweb.png";
 import "../styles/header.css";
 
 export default function Header() {
   return (
     <header className="site-header">
-      <h1 className="site-title">EMOWEB</h1>
+      
+      <div className="header-logo">
+        <a href="/" className="site-nav no-underline flex items-center"> <img src={logo} alt="EMOWEB Logo" className="logo-image"/>
+        <h1 className="site-title">EMOWEB</h1>
+        </a>  
+      </div>
+      
       <div className="site-container">
         <nav className="header-nav">
           <a href="#" className="nav-link">Home</a>
@@ -12,6 +19,7 @@ export default function Header() {
           <a href="#" className="nav-link">Contact</a>
         </nav>
       </div>
+
       <div className="header-controls" role="group" aria-label="Header controls">
         <button className="search-button" aria-label="Search">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
