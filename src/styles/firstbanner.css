@@ -1,0 +1,59 @@
+/* First banner / hero card */
+.first-banner{
+  /* match header sizing: centered rounded rectangle */
+  max-width:1200px;
+  width:80%;
+  margin:18px auto;
+  background-color: var(--card);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  border: 2px solid rgb(0, 247, 255);
+  display:flex;
+  justify-content:center;
+  padding:1.25rem 0.75rem;
+  box-shadow: 0 2px 20px rgb(1, 183, 255);
+  position:relative;
+  min-height:140px;
+  border-radius:14px;
+}
+.banner-content{
+  width:100%;
+  max-width:100%;
+  padding:0 1rem;
+}
+.banner-card{
+  /* Keep content centered and readable; card itself is transparent so
+     the image shows edge-to-edge. The pseudo-overlay ensures text contrast. */
+  background: transparent;
+  border-radius:0.5rem;
+  display:flex;
+  align-items:center;
+  gap:1.25rem;
+  padding:1rem 1.25rem;
+  min-height:120px;
+}
+
+/* subtle dark overlay on top of the background image to increase text contrast */
+.first-banner::before{
+  content: "";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(rgba(3,7,18,0.28), rgba(3,7,18,0.12));
+  z-index:0;
+  pointer-events:none;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+/* ensure the content sits above the overlay */
+.banner-content, .banner-card, .banner-text{ position:relative; z-index:1 }
+.banner-media{flex:0 0 auto}
+.banner-icon{height:64px;width:auto;display:block}
+.banner-text{flex:1}
+.banner-title{margin:0;font-size:1.25rem;color:var(--text);font-weight:700}
+.banner-sub{margin:0.35rem 0 0;color:var(--light-text,#a3c9ff)}
+
+@media (max-width:720px){
+  .banner-card{flex-direction:column;align-items:flex-start}
+  .banner-icon{height:54px}
+}

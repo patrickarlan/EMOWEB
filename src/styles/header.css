@@ -5,14 +5,24 @@
 
 /* Fallback header styles (works even if Tailwind utilities aren't loaded) */
 .site-header{
-	position:relative;
-	height:100px;
-	background:var(--card);
-	display:grid;
-	grid-template-columns: auto 1fr auto;
-	align-items:center;
-	box-shadow:0 2px 8px rgba(15,23,42,0.06);
-	z-index:100;
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    backdrop-filter: blur(10px) saturate(120%);
+    position:relative;
+    height:100px;
+    /* translucent surface so header blurs what's behind it but remains readable */
+    background-color: rgba(6,10,20,0.32);
+    display:grid;
+    grid-template-columns: auto 1fr auto;
+    align-items:center;
+    box-shadow: 0 2px 20px rgba(9, 99, 233, 0.342);
+    z-index:100;
+
+    max-width:1200px;
+    width: 80%;
+    margin:18px auto; /* center horizontally with some vertical breathing room */
+    padding:0.5rem 0.9rem;
+    border-radius:50px;
+    border: 1px solid rgba(0, 238, 255, 0.616);
 }
 
 /* title flushed to left edge */
@@ -21,7 +31,7 @@
 	left:0;
 	font-size:1.125rem;
 	font-weight:700;
-	color:var(--text);
+	color:#ffffff;
 	margin:0; /* reset default spacing */
 }
 
@@ -39,9 +49,9 @@
 .header-logo .site-nav{
 	display:flex;
 	align-items:center;
-	gap:50px; /* change this value to increase/decrease spacing */
+	gap:12px; /* reduced gap so the center nav appears visually centered */
 	text-decoration:none; /* keep anchor visually like plain text */
-	margin-left: 25px;
+	margin-left: 0; /* avoid pushing layout to the right */
 }
 /* Left wrapper for logo + title so we can add gap without shifting center nav */
 .header-logo{
@@ -88,8 +98,26 @@
 
 }
 
-.nav-link{ color:#1f2937; text-decoration:none; font-size:0.95rem }
+.nav-link{ color:rgba(255,255,255,0.92); text-decoration:none; font-size:0.95rem }
 .nav-link + .nav-link{ margin-left:0 }
+
+/* gradient fill hover for header nav links (underline -> full fill) */
+.nav-link{
+	position:relative;
+	background: linear-gradient(120deg, #0085f175 0%, #333399 100%);
+	background-repeat: no-repeat;
+	background-size: 100% 0.18em;
+	background-position: 0 100%;
+	border-radius: 8px;
+	padding: 10px;
+	transition: background-size 0.25s ease-in, color 0.18s ease;
+}
+.nav-link:hover,
+.nav-link:focus-visible{
+	background-size: 100% 100%;
+	border-radius: 8px;
+	color: #fff;
+}
 
 /* Push page content below the fixed header */
 .page-content{ padding-top:0 }
@@ -101,11 +129,11 @@
 
 .header-controls{
 	display:flex;
-	gap:50px;
+	gap:22px;
 	padding-right:0.75rem; /* match site-title padding */
 	align-items:center;
 	justify-self:end; /* keep controls in the right column */
-	margin-right: 25px;
+	margin-right: 20px;
 }
 
 .search-button,
@@ -118,10 +146,10 @@
 	padding:0;
 	margin: 0;
 	border-radius:0.375rem;
-	background:transparent;
-	border:0;
-	cursor:pointer;
-	color:var(--muted-text, #374151);
+	background: rgba(255,255,255,0.04);
+	border: 0;
+	cursor: pointer;
+	color: rgba(255,255,255,0.92);
 }
 .search-button:hover,
 .profile-button:hover{ background:rgba(15,23,42,0.04); color:var(--text); transform:translateY(-1px); }

@@ -8,10 +8,19 @@
 
 /* Footer styling */
 .site-footer{
-	background:var(--card);
-	padding:1rem 0;
-	height:80px;
-	box-shadow:0 -2px 8px rgba(15,23,42,0.06);
+	/* centered rounded rectangle to match header/banner */
+	max-width:1200px;
+	width:80%;
+	margin:18px auto;
+	background-color: rgba(6,10,20,0.28);
+	-webkit-backdrop-filter: blur(8px) saturate(120%);
+	backdrop-filter: blur(8px) saturate(120%);
+	border-radius:50px;
+	border: 1px solid rgb(0, 247, 255);
+	display:flex;
+	padding:0.85rem 0;
+	min-height:72px;
+	box-shadow: 0 2px 20px rgba(9, 198, 255, 0.226);
 	overflow:visible; /* ensure absolutely positioned title is not clipped */
 	position:relative;
 }
@@ -23,8 +32,11 @@
 	padding:0 1rem;
 	height:100%;
 	display:flex;
-	align-items:center;
-	justify-content:center;
+	align-items:flex-start;
+	justify-content:space-between;
+	flex-direction:column;
+	width:100%;
+	gap:0.5rem;
 }
 
 
@@ -37,15 +49,63 @@
 	justify-content:center;
 	gap:0.5rem;
 	width:100%;
+	color: var(--text);
+}
+
+/* top area that holds the nav */
+.footer-top{
+	width:100%;
+	display:flex;
+	justify-content:center;
+	align-items:center;
+	padding:0.4rem 0 0.2rem 0;
+}
+
+/* thin divider between the nav (top) and the bottom row */
+.divider{
+	height:1px;
+	width:100%;
+	background: linear-gradient(90deg, rgba(9, 198, 255, 0.849), rgba(136, 11, 161, 0.842));
+	margin:0.2rem 0;
+	align-self:stretch;
+	box-shadow: 0 1px 2px rgba(36, 9, 189, 0.753);
+}
+
+/* bottom row with title left and social links right */
+.footer-bottom{
+	width:100%;
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:1rem;
+	padding:0.25rem 0 0.35rem 0;
 }
 
 .footer-link{
 	font-size:0.9rem;
-	color:var(--muted-text, #4b5563);
+	color:var(--muted-text, #b2d2ff);
 	text-decoration:none;
 	padding:0.25rem 0.35rem;
 }
 .footer-link:hover{color:var(--text, #0f172a)}
+
+/* gradient fill-up hover for footer links (underline -> full fill) */
+.footer-link{
+	text-decoration:none;
+	position:relative;
+	background: linear-gradient(120deg, #0085f175 0%, #333399 100%);
+	background-repeat: no-repeat;
+	background-size: 100% 0.18em;
+	background-position: 0 100%;
+	border-radius: 8px;
+	transition: background-size 0.25s ease-in, color 0.18s ease;
+}
+.footer-link:hover,
+.footer-link:focus-visible{
+	background-size: 100% 100%;
+	border-radius: 8px;
+	color: #fff; /* ensure text contrasts with filled gradient */
+}
 
 /* Small-screen adjustments */
 @media (max-width:480px){
@@ -55,26 +115,27 @@
 
 /* Site title bottom-left (matches class in footer.jsx) */
 .site-title-footer{
-	position:absolute;
-	left:0; /* flush to the page edge */
-	bottom:0.75rem; /* keep a small gap from the footer edge */
+	position:relative;
 	margin:0;
-	padding-left:0.75rem; /* small breathing room from very edge */
+	padding-left:0.25rem;
 	font-size:1rem;
 	font-weight:700;
-    	z-index:6;
+	z-index:6;
+	overflow:hidden; /* clip overlay when animating up */
+	display:inline-block;
+	color: var(--text);
+	text-decoration:none;
+	transition: 0.1s ease;
 }
 
-/* Optional: if you want the title to stick to the viewport bottom-left (always visible),
-   add the class `fixed` to the element in `footer.jsx` (e.g. className="site-title-footer fixed`). */
-/* remove fixed positioning; title is positioned absolutely inside the footer */
+.site-title-footer:hover{
+	color: rgb(226, 83, 255);
+	transform: scale(1.05);
 
-/* Social links pinned to bottom-right */
+}
+
 .social-links{
-	position:absolute; /* positioned inside footer */
-	right:0; /* flush to the page edge */
-	bottom:0.75rem;
-	padding-right:0.75rem; /* small breathing room from edge */
+	position:relative;
 	display:flex;
 	gap:0.5rem;
 	align-items:center;
@@ -88,10 +149,12 @@
 	height:36px;
 	padding:0;
 	font-size:0.85rem;
-	color:var(--muted-text, #4b5563);
+	color:var(--muted-text, #ead1ff);
 	background:transparent;
-	border-radius:0.375rem;
+	border-radius:50%;
 	text-decoration:none;
+	position:relative;
+	overflow:hidden;
 }
 .social-link:hover{
 	background:rgba(15,23,42,0.06);
@@ -100,7 +163,28 @@
 	transition:transform .12s ease, background .12s ease, color .12s ease;
 }
 /* bootstrap icon sizing inside the button */
-.social-link i{ font-size:16px; line-height:1; display:inline-block }
+.social-link i{ font-size:16px; line-height:1; display:inline-block; position:relative; z-index:3; transition: color .35s ease, transform .6s ease; }
+
+/* fill pseudo-element for social icons (slides up to fill the circle) */
+.social-link::before{
+	content:"";
+	position:absolute;
+	left:0;
+	top:100%;
+	width:100%;
+	height:100%;
+	background: rgba(136,11,161,1);
+	transition: top .45s ease;
+	z-index:1;
+}
+.social-link:hover::before{ top:0; }
+.social-link:hover i{ color:#fff; transform: rotateY(360deg); }
+
+/* brand colors for each social button */
+.social-links a:nth-child(1)::before{ background:#3b5999; } /* facebook */
+.social-links a:nth-child(2)::before{ background:#55acee; } /* twitter/instagram */
+.social-links a:nth-child(3)::before{ background:#0077b5; } /* linkedin/tiktok */
+.social-links a:nth-child(4)::before{ background:#dd4b39; } /* google */
 
 @media (max-width:768px){
 	/* Slightly increase spacing on medium-small screens */

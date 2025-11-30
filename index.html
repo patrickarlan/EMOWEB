@@ -9,6 +9,36 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Simple page transition: fade-in on load, fade-out on internal link click.
+      (function(){
+        const DURATION = 400; // ms - matches CSS
+        if (typeof window === 'undefined') return;
+        const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!prefersReduced) {
+          document.documentElement.classList.remove('no-js');
+          window.addEventListener('DOMContentLoaded', ()=>{
+            document.body.classList.add('fade-in');
+            // Attach to internal links to play fade-out before navigation
+            document.querySelectorAll('a[href]').forEach(a=>{
+              const href = a.getAttribute('href')||'';
+              // ignore anchors and external/targeted links
+              if (href.startsWith('#') || a.target && a.target !== '_self') return;
+              a.addEventListener('click', (e)=>{
+                try{
+                  const url = new URL(a.href, location.href);
+                  if (url.origin !== location.origin) return; // external
+                }catch(err){ return; }
+                e.preventDefault();
+                document.body.classList.remove('fade-in');
+                document.body.classList.add('fade-out');
+                setTimeout(()=> location.href = a.href, DURATION);
+              });
+            });
+          });
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

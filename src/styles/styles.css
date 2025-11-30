@@ -2,11 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-:root{  --bg:#f6f8fb; 
-        --card:#fff; 
+:root{  --bg:#012136; 
+        --card:#002b38; 
         --accent:#2563eb; 
-        --text:#0f172a; }
-html,body,#root{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:var(--text)}
+        --text:#00c3ff; }
+html,body,#root{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--text)}
+
+/* page full linear gradient background */
+/* Apply the page background to the `body` only and fix it so scrolling doesn't reveal another layer */
+body{
+  background: linear-gradient(to right, #020025, #061f41, #0a375e, #09527b, #056e98, #01709e, #0071a3, #0073a9, #075996, #1c3e80, #282266, #2c0048) no-repeat center center fixed;
+  background-size: cover;
+  min-height:100%;
+  transition: background-color .3s ease;
+}
+
+/* Page fade-in / fade-out transitions for gentle page changes */
+:root{ --page-fade-duration: 400ms; }
+@keyframes pageFadeIn{ from{ opacity:0 } to{ opacity:1 } }
+@keyframes pageFadeOut{ from{ opacity:1 } to{ opacity:0 } }
+
+body.fade-in{ animation: pageFadeIn var(--page-fade-duration) ease forwards; }
+body.fade-out{ animation: pageFadeOut var(--page-fade-duration) ease forwards; }
+
+@media (prefers-reduced-motion: reduce){
+  body.fade-in, body.fade-out{ animation: none; }
+}
+
+/* ensure root doesn't provide a separate background layer */
+html, #root{ background: transparent; }
+
+/* soft overlay to mask banding/seams in some displays */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.02), rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.02));
+  z-index:0;
+}
 .app{display:flex;align-items:center;justify-content:center;height:100vh;padding:1rem}
 .app-header{background:var(--card);padding:2rem;border-radius:12px;box-shadow:0 8px 30px rgba(15,23,42,0.06);text-align:center;min-width:260px}
 .lead{color:#475569;margin-top:0.25rem}
