@@ -1,12 +1,31 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import logo from "../pics/emoweb.png";
 import "../styles/header.css";
 
 
 export default function Header() {
+  const [isSticky, setIsSticky] = useState(false);
+  const headerRef = useRef(null);
+  useEffect(() => {
+    const headerEl = headerRef.current;
+    if (!headerEl) return;
+
+    const threshold = 1; // become sticky as soon as user starts scrolling
+
+    const onScroll = () => {
+      const scrolled = window.scrollY || window.pageYOffset;
+      setIsSticky(scrolled > threshold);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // run once to set initial state
+    onScroll();
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <header className="site-header">
+    <header ref={headerRef} className={"site-header backdrop-blur-sm" + (isSticky ? " sticky" : "")}>
       
       <div className="header-logo">
         <Link to="/" className="site-nav no-underline flex items-center"> <img src={logo} alt="EMOWEB Logo" className="logo-image"/>
@@ -14,7 +33,7 @@ export default function Header() {
         </Link>  
       </div>
       
-      <div className="site-container">
+      <div className="site-container backdrop-blur-sm">
         <nav className="header-nav">
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/about" className="nav-link">About</Link>

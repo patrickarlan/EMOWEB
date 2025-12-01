@@ -11,7 +11,7 @@ html,body,#root{height:100%;margin:0;font-family:Inter, system-ui, -apple-system
 /* page full linear gradient background */
 /* Apply the page background to the `body` only and fix it so scrolling doesn't reveal another layer */
 body{
-  background: linear-gradient(to right, #020025, #061f41, #0a375e, #09527b, #056e98, #01709e, #0071a3, #0073a9, #075996, #1c3e80, #282266, #2c0048) no-repeat center center fixed;
+  background: linear-gradient(to left, #19484a, #004650, #004357, #003f5d, #003a61, #12365f, #1e315c, #272c58, #2d2851, #312549, #332242, #34203b) no-repeat center center fixed;
   background-size: cover;
   min-height:100%;
   transition: background-color .3s ease;

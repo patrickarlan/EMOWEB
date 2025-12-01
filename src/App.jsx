@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/header";
 import LandingPage from "./main/landingpage";
 import Footer from "./components/footer";
@@ -10,11 +10,12 @@ import Contact from "./main/contact";
 import "./styles/styles.css";
 
 export default function App() {
+  const location = useLocation();
+
   return (
     <div className="app-root">
       <ErrorBoundary>
         <Header />
-        <FirstBanner />
 
         <main className="page-content">
           <Routes>

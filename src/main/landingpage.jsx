@@ -11,8 +11,8 @@ export default function LandingPage() {
 					<div className="side-panel second-panel">Panel 2</div>
 					<div className="side-panel third-panel">Panel 3</div>
 				</div>
-				<div className="landing-panel flex flex-col justify-center items-center">
-					<h2 className="text-2xl font-bold mb-4">Welcome to EMOWEB</h2>
+				<div className="landing-panel glass flex flex-col justify-center items-center">
+					<h1 className="landing-title">EMOWEB</h1>
 					<p className="text-gray-600">This is a simple white panel with a shadow.</p>
 				</div>
 			</div>

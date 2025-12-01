@@ -5,25 +5,52 @@
 
 /* Fallback header styles (works even if Tailwind utilities aren't loaded) */
 .site-header{
-    -webkit-backdrop-filter: blur(10px) saturate(120%);
-    backdrop-filter: blur(10px) saturate(120%);
-    position:relative;
-    height:100px;
-    /* translucent surface so header blurs what's behind it but remains readable */
-    background-color: rgba(6,10,20,0.32);
-    display:grid;
-    grid-template-columns: auto 1fr auto;
-    align-items:center;
-    box-shadow: 0 2px 20px rgba(9, 99, 233, 0.342);
-    z-index:100;
+	/* glass surface: translucent, blurred, with subtle cyan border */
+	background: rgba(2, 100, 205, 0.12);
+	backdrop-filter: blur(8px) !important;
+	-webkit-backdrop-filter: blur(8px) !important;
+	/* use position:sticky to keep the header attached without changing layout */
+	position: sticky;
+	top: 50px;
+	height:100px;
+	display:grid;
+	grid-template-columns: auto 1fr auto;
+	align-items:center;
+	transition: transform 320ms cubic-bezier(.2,.9,.2,1), top 320ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms cubic-bezier(.2,.9,.2,1), border-color 220ms ease, -webkit-backdrop-filter 220ms ease, backdrop-filter 220ms ease;
+	transform-style: preserve-3d;
+	transform-origin: center top;
+	z-index:100;
 
-    max-width:1200px;
-    width: 80%;
-    margin:18px auto; /* center horizontally with some vertical breathing room */
-    padding:0.5rem 0.9rem;
-    border-radius:50px;
-    border: 1px solid rgba(0, 238, 255, 0.616);
+	max-width:1200px;
+	width: 80%;
+	margin:18px auto; /* center horizontally with some vertical breathing room */
+	padding:0.5rem 0.9rem;
+	border-radius:16px;
+	border: 1px solid rgba(2, 100, 205, 0.315);
+
 }
+
+/* Temporary: strong-test overlay to verify backdrop-filter is actually applied.
+   If the blur becomes visible, we can reduce the values and keep the effect. */
+.site-header{
+	position: sticky; /* ensure positioning is present */
+	overflow: visible; /* allow pseudo-element to be visible */
+}
+
+.site-header::before{
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: rgba(6, 24, 53, 0.12); /* subtle tint to make blur visible */
+	-webkit-backdrop-filter: blur(8px) !important;
+	backdrop-filter: blur(8px) !important;
+	pointer-events: none;
+	z-index: 0;
+}
+
+/* make sure header children render above the ::before layer */
+.site-header > *{ position: relative; z-index: 1 }
 
 /* title flushed to left edge */
 .site-title{
@@ -37,8 +64,6 @@
 
 .logo-image {
 	height: 50px;
-	width: auto;
-	margin-right: 0;
 	margin-left: 0;
 }
 
@@ -160,4 +185,50 @@
 @media (max-width:480px){
 	.header-controls{ padding-right:0.5rem }
 	.search-button,.profile-button{ width:32px;height:32px }
+}
+
+/* hover and focus effects for header (subtle lift + stronger blur) */
+.site-header:hover,
+.site-header:focus-within{
+	/* non-sticky hover: only translate Y (no scale) */
+	transform: translateY(-4px);
+	box-shadow: 0 10px 40px rgba(0,0,0,0.14);
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+	border-color: rgba(2, 100, 205, 0.32);
+}
+
+/* when header is sticky we must preserve the horizontal centering (translateX),
+   so apply translateX(-50%) together with translateY on hover/focus */
+.site-header.sticky:hover,
+.site-header.sticky:focus-within{
+	/* slightly stronger lift while hovered when already sticky */
+	transform: translate3d(0px, -34px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+	-webkit-backdrop-filter: blur(28px);
+	backdrop-filter: blur(28px);
+	border-color: rgba(2, 100, 205, 0.32);
+}
+
+@media (prefers-reduced-motion: reduce){
+	.site-header{ transition: none; }
+	.site-header:hover, .site-header:focus-within{ transform: none; }
+}
+
+/* Styles applied when header becomes sticky (following the viewport) */
+.site-header.sticky{
+	/* when scrolled, slightly increase blur and shadow without changing layout */
+	z-index: 1100;
+	border-radius: 14px;
+	-webkit-backdrop-filter: blur(24px);
+	backdrop-filter: blur(24px);
+	box-shadow: 0 10px 10px rgba(6, 54, 77, 0.18);
+	border-color: rgba(2,100,205,0.26);
+	/* requested 3D transform when scrolled */
+	top: 50px; /* add more space from the top when header becomes sticky */
+	transform: translate3d(0px, -30px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+}
+
+/* ensure smooth small movement */
+.site-header{
+	will-change: transform, box-shadow, backdrop-filter;
 }
