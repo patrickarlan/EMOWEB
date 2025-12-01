@@ -9,8 +9,8 @@
 /* Footer styling */
 .site-footer{
 	/* centered rounded rectangle to match header/banner */
-	max-width:1200px;
-	width:80%;
+	max-width:1220px;
+    width: 80%;
 	margin:18px auto;
 	background-color: rgba(6,10,20,0.28);
 	-webkit-backdrop-filter: blur(8px) saturate(120%);
@@ -117,7 +117,7 @@
 .site-title-footer{
 	position:relative;
 	margin:0;
-	padding-left:0.25rem;
+	padding-left:1rem;
 	font-size:1rem;
 	font-weight:700;
 	z-index:6;
@@ -134,7 +134,7 @@
 
 }
 
-.social-links{
+.social-container{
 	position:relative;
 	display:flex;
 	gap:0.5rem;

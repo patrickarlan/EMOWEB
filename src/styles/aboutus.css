@@ -1,0 +1,15 @@
+/* Minimal contact page styles - placeholder */
+.about-page {
+  padding: 3rem 0;
+}
+.about-page .site-container-about {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.about-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.about-page p {
+  color: rgba(255,255,255,0.8);
+}

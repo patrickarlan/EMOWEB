@@ -1,22 +1,24 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import logo from "../pics/emoweb.png";
 import "../styles/header.css";
+
 
 export default function Header() {
   return (
     <header className="site-header">
       
       <div className="header-logo">
-        <a href="/" className="site-nav no-underline flex items-center"> <img src={logo} alt="EMOWEB Logo" className="logo-image"/>
+        <Link to="/" className="site-nav no-underline flex items-center"> <img src={logo} alt="EMOWEB Logo" className="logo-image"/>
         <h1 className="site-title">EMOWEB</h1>
-        </a>  
+        </Link>  
       </div>
       
       <div className="site-container">
         <nav className="header-nav">
-          <a href="#" className="nav-link">Home</a>
-          <a href="#" className="nav-link">About</a>
-          <a href="#" className="nav-link">Contact</a>
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/about" className="nav-link">About</Link>
+          <Link to="/contact" className="nav-link">Contact</Link>
         </nav>
       </div>
 

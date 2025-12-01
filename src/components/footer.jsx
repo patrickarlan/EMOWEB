@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../styles/footer.css";
 
 export default function Footer() {
@@ -8,9 +9,9 @@ export default function Footer() {
         <div className="footer-top">
           <div className="nav-wrapper">
             <nav className="footer-nav">
-              <a href="#" className="footer-link">Home</a>
-              <a href="#" className="footer-link">About Us</a>
-              <a href="#" className="footer-link">Contact</a>
+              <a href="/" className="footer-link">Home</a>
+              <a href="/aboutus" className="footer-link">About Us</a>
+              <a href="/contact" className="footer-link">Contact</a>
             </nav>
           </div>
         </div>
@@ -18,23 +19,23 @@ export default function Footer() {
         <div className="divider" aria-hidden="true" />
 
         <div className="footer-bottom">
-          <a href="/" className="site-title-footer no-underline" aria-label="EMOWEB">
+          <Link to="/" className="site-title-footer no-underline" aria-label="EMOWEB">
             <span className="title-base">EMOWEB</span>
-          </a>
+          </Link>
 
-          <div className="social-links" aria-label="Social links">
-            <a href="#" className="social-link" aria-label="Facebook" title="Facebook">
+          <div className="social-container" aria-label="Social links">
+            <Link to="#" className="social-link" aria-label="Facebook" title="Facebook">
               <i className="bi bi-facebook" aria-hidden="true"></i>
-            </a>
-            <a href="#" className="social-link" aria-label="Instagram" title="Instagram">
+            </Link>
+            <Link to="#" className="social-link" aria-label="Instagram" title="Instagram">
               <i className="bi bi-instagram" aria-hidden="true"></i>
-            </a>
-            <a href="#" className="social-link" aria-label="TikTok" title="TikTok">
+            </Link>
+            <Link to="#" className="social-link" aria-label="TikTok" title="TikTok">
               <i className="bi bi-tiktok" aria-hidden="true"></i>
-            </a>
-            <a href="#" className="social-link" aria-label="Twitter" title="Twitter">
+            </Link>
+            <Link to="#" className="social-link" aria-label="Twitter" title="Twitter">
               <i className="bi bi-twitter" aria-hidden="true"></i>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
