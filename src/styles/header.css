@@ -154,7 +154,7 @@
 
 .header-controls{
 	display:flex;
-	gap:22px;
+	gap:30px;
 	padding-right:0.75rem; /* match site-title padding */
 	align-items:center;
 	justify-self:end; /* keep controls in the right column */

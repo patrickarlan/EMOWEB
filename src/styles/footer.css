@@ -58,24 +58,130 @@
 
 /* Center nav and keep links inline (stacked next to each other) */
 .footer-nav{
-	/* Stack nav links in a vertical column and center them */
+	/* Horizontal footer nav: center links, allow edge buttons to hug container sides */
 	display:flex;
-	flex-direction:column;
+	flex-direction:row;
 	align-items:center;
 	justify-content:center;
-	gap:0.5rem;
+	gap:1.6rem; /* increased spacing between nav links */
 	width:100%;
 	color: var(--text);
 }
 
-/* top area that holds the nav */
+/* Button appearance for terms/privacy (pills) */
+.button-link{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	padding:10px 20px;
+	border-radius:35px;
+	text-decoration:none;
+	color:var(--btn-primary-text, #ffffff);
+	border:1px solid rgba(255, 255, 255, 0.226);
+	background:transparent;
+	position:relative;
+	overflow:hidden;
+	z-index:0;
+	transition: color 220ms ease, transform 180ms ease, box-shadow 280ms ease;
+	will-change: transform, box-shadow;
+}
+
+.label-button {
+	font-size:0.90rem;
+	font-weight:600;
+	line-height:1.2;
+}
+
+/* animated gradient fill (fills under text) */
+.button-link::before{
+	content: "";
+	position:absolute;
+	left:0; top:0; bottom:0; right:0;
+	background: linear-gradient(90deg, rgba(9,198,255,0.92), rgba(139,92,246,0.92));
+	transform-origin:left center;
+	transform: scaleX(0);
+	transition: transform 360ms cubic-bezier(.2,.9,.2,1);
+	z-index:-1;
+}
+
+/* subtle moving sheen */
+.button-link::after{
+	content: "";
+	position:absolute;
+	top:-40%; left:-60%;
+	width:40%; height:200%;
+	background: linear-gradient(120deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06), rgba(255,255,255,0));
+	transform: rotate(18deg) translateX(0);
+	opacity:0;
+	z-index:0;
+	pointer-events:none;
+	will-change: transform, opacity;
+}
+
+/* keep fill visible while hovered/focused/active */
+.button-link:hover::before,
+.button-link:focus::before,
+.button-link:active::before,
+.button-link:focus-visible::before{
+	transform: scaleX(1);
+}
+
+/* sheen animation: play and keep end state while hovered/focused */
+.button-link:hover::after,
+.button-link:focus::after,
+.button-link:focus-visible::after{
+	opacity:1;
+	animation: sheen-slide 900ms cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+@keyframes sheen-slide{
+	0%{ transform: rotate(18deg) translateX(-220%); }
+	100%{ transform: rotate(18deg) translateX(220%); }
+}
+
+.button-link:hover{
+	color: #fff;
+	transform: translateY(-2px);
+}
+
+/* Gradient glow on hover/focus */
+.button-link:hover,
+.button-link:focus,
+.button-link:focus-visible{
+		box-shadow:
+			0 12px 42px rgba(0,209,255,0.22),
+			0 28px 90px rgba(139,92,246,0.18),
+			0 0 80px rgba(0,209,255,0.18),
+			0 0 2px rgba(139,92,246,0.12) inset;
+}
+
+/* stronger glow for active/pressed state */
+.button-link:active{
+	box-shadow:
+	  0 6px 20px rgba(0,209,255,0.10),
+	  0 10px 36px rgba(139,92,246,0.08);
+	transform: translateY(0);
+}
+.button-link .label-button{ margin:0 }
+.button-link .text-span-19{ color:inherit }
+
+/* top area that holds the nav: use three columns so edge buttons can sit at the sides */
 .footer-top{
 	width:100%;
-	display:flex;
-	justify-content:center;
+	display:grid;
+	grid-template-columns: auto 1fr auto;
 	align-items:center;
 	padding:0.4rem 0 0.2rem 0;
+	gap:0.5rem;
 }
+
+/* position edge containers */
+.footer-top-left{ justify-self:start }
+.footer-top-right{ justify-self:end }
+.footer-top-center{ justify-self:stretch }
+
+/* center the nav inside the center column */
+.footer-top-center .footer-nav{ justify-content:center }
 
 /* thin divider between the nav (top) and the bottom row */
 .divider{
@@ -98,32 +204,71 @@
 }
 
 .footer-link{
-	font-size:0.9rem;
-	color:var(--muted-text, #b2d2ff);
-	text-decoration:none;
-	padding:0.25rem 0.35rem;
-}
-.footer-link:hover{color:var(--text, #0f172a)}
-
-/* gradient fill-up hover for footer links (underline -> full fill) */
-.footer-link{
-	text-decoration:none;
 	position:relative;
-	background: linear-gradient(120deg, #0085f175 0%, #333399 100%);
-	background-repeat: no-repeat;
-	background-size: 100% 0.18em;
-	background-position: 0 100%;
-	border-radius: 8px;
-	transition: background-size 0.25s ease-in, color 0.18s ease;
-}
-.footer-link:hover,
-.footer-link:focus-visible{
-	background-size: 100% 100%;
-	border-radius: 8px;
-	color: #fff; /* ensure text contrasts with filled gradient */
+	display:inline-block;
+	font-size:0.95rem;
+	color:var(--muted-text, rgba(255,255,255,0.88));
+	text-decoration:none;
+	padding:0.25rem 0.9rem; /* wider tappable area */
+	border-radius:8px;
+	transition: color 220ms ease;
+	z-index:1;
 }
 
-/* Small-screen adjustments */
+/* full-width animated gradient background under the link */
+.footer-link::before{
+	content: "";
+	position:absolute;
+	left:0; right:0; top:0; bottom:0;
+	border-radius:8px;
+	/* toned-down base gradient for subtler fill */
+	background: linear-gradient(90deg, rgba(9,198,255,0.14), rgba(139,92,246,0.14));
+	transform: scaleX(0);
+	transform-origin: center;
+	transition: transform 320ms cubic-bezier(.25,.8,.25,1), box-shadow 220ms ease, opacity 220ms ease;
+	z-index:0;
+	pointer-events:none;
+	opacity:0.9;
+}
+
+/* extra halo glow for the nav link */
+.footer-link::after{
+	content: "";
+	position:absolute;
+	/* moderate halo area for a softer glow */
+	left:-10%; right:-10%; top:-30%; bottom:-30%;
+	border-radius:14px;
+	background: radial-gradient(ellipse at center, rgba(9,198,255,0.08), rgba(139,92,246,0.06) 40%, transparent 60%);
+	filter: blur(18px);
+	opacity:0;
+	transition: opacity 260ms ease, transform 260ms ease, filter 260ms ease;
+	z-index:-1;
+	pointer-events:none;
+}
+
+.footer-link:hover::before,
+.footer-link:focus::before,
+.footer-link:focus-visible::before{
+	transform: scaleX(1);
+	/* much stronger spread/shadow for glowy effect */
+	box-shadow: 0 24px 80px rgba(9, 198, 255, 0.897), 0 40px 140px rgba(139,92,246,0.18), 0 0 100px rgba(9,198,255,0.12) inset;
+	opacity:1;
+}
+.footer-link:hover::before,
+.footer-link:focus::before,
+.footer-link:focus-visible::before{
+	transform: scaleX(1);
+	/* softened spread/shadow for a more subtle glow */
+	box-shadow: 0 12px 34px rgba(9,198,255,0.12), 0 20px 60px rgba(139,92,246,0.10), 0 0 40px rgba(9,198,255,0.06) inset;
+	opacity:1;
+}
+.footer-link:hover::after,
+.footer-link:focus::after,
+.footer-link:focus-visible::after{
+	opacity:1;
+	transform: translateY(-2px) scale(1.03);
+	filter: blur(20px);
+}
 @media (max-width:480px){
 	.site-title{left:0.6rem; bottom:0.4rem; font-size:0.95rem}
 	.site-title-footer{left:0.6rem; bottom:0.4rem; font-size:0.95rem}

@@ -7,6 +7,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import FirstBanner from "./components/firstbanner";
 import AboutUs from "./main/aboutus";
 import Contact from "./main/contact";
+import Terms from "./main/terms";
+import Privacy from "./main/privacy";
 import "./styles/styles.css";
 
 export default function App() {
@@ -22,6 +24,8 @@ export default function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
           </Routes>
         </main>
 

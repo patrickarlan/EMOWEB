@@ -3,10 +3,14 @@
 @tailwind utilities;
 
 :root{  --bg:#012136; 
-        --card:#002b38; 
-        --accent:#2563eb; 
-        --text:#00c3ff; }
-html,body,#root{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--text)}
+  --card:#002b38; 
+  --accent:#2563eb; 
+  --text:#00c3ff;
+  --btn-primary-bg: #00d1ff;
+  --btn-primary-text: #ffffff;
+  --font-sans: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+        
+html,body,#root{height:100%;margin:0;font-family:var(--font-sans);color:var(--text)}
 
 /* page full linear gradient background */
 /* Apply the page background to the `body` only and fix it so scrolling doesn't reveal another layer */

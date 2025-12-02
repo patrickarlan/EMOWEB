@@ -6,13 +6,26 @@ export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="site-container">
+
         <div className="footer-top">
-          <div className="nav-wrapper">
-            <nav className="footer-nav">
-              <a href="/" className="footer-link">Home</a>
-              <a href="/aboutus" className="footer-link">About Us</a>
-              <a href="/contact" className="footer-link">Contact</a>
+          <div className="footer-top-left">
+            <Link to="/terms" className="button-link no-underline edge-left">
+              <p className="label-button"><span className="text-span-19">Terms</span></p>
+            </Link>
+          </div>
+
+          <div className="footer-top-center">
+            <nav className="footer-nav" aria-label="Footer navigation">
+              <Link to="/" className="footer-link">Home</Link>
+              <Link to="/about" className="footer-link">About Us</Link>
+              <Link to="/contact" className="footer-link">Contact</Link>
             </nav>
+          </div>
+
+          <div className="footer-top-right">
+            <Link to="/privacy" className="button-link no-underline edge-right">
+              <p className="label-button"><span className="text-span-19">Privacy</span></p>
+            </Link>
           </div>
         </div>
 
