@@ -36,9 +36,9 @@ export default function AboutUs() {
             </div>
 
             <div className="feature">
-              <p className="feature-text"><strong>Adaptive, human-like responses.</strong> The system maps detected emotions to expressive OLED animations and motion patterns that are tuned to be warm and non-threatening. EMO AI learns simple preferences over time to make interactions feel more personal.</p>
+              <p className="feature-text text-center"><strong>Adaptive, human-like responses.</strong> The system maps detected emotions to expressive OLED animations and motion patterns that are tuned to be warm and non-threatening. EMO AI learns simple preferences over time to make interactions feel more personal.</p>
               <div className="feature-img" aria-hidden="true">
-                <svg viewBox="0 0 64 64" width="160" height="120" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 64 64" width="260" height="195" xmlns="http://www.w3.org/2000/svg">
                   <rect x="6" y="18" width="52" height="28" rx="8" fill="#8b5cf6" opacity="0.14"/>
                   <circle cx="24" cy="32" r="6" fill="#b7a3ff" />
                   <path d="M40 28 q6 4 0 8" stroke="#b7a3ff" stroke-width="3" stroke-linecap="round" fill="none"/>
@@ -46,8 +46,7 @@ export default function AboutUs() {
               </div>
             </div>
 
-            <div className="feature">
-              <p className="feature-text text-left"><strong>Designed for education and research.</strong> EMO AI is lightweight and extensible—ideal for classroom demos, prototyping human-robot interaction studies, and teaching TinyML concepts. It exposes safe telemetry hooks for researchers while remaining simple to deploy.</p>
+            <div className="feature reverse">
               <div className="feature-img" aria-hidden="true">
                 <svg viewBox="0 0 64 64" width="160" height="120" xmlns="http://www.w3.org/2000/svg">
                   <rect x="8" y="14" width="48" height="36" rx="5" fill="#00d1ff" opacity="0.12"/>
@@ -55,6 +54,7 @@ export default function AboutUs() {
                   <circle cx="28" cy="26" r="4" fill="#00d1ff" />
                 </svg>
               </div>
+              <p className="feature-text text-left"><strong>Designed for education and research.</strong> EMO AI is lightweight and extensible—ideal for classroom demos, prototyping human-robot interaction studies, and teaching TinyML concepts. It exposes safe telemetry hooks for researchers while remaining simple to deploy.</p>
             </div>
           </section>
       </div>

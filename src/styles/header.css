@@ -123,7 +123,7 @@
 
 }
 
-.nav-link{ color:rgba(255,255,255,0.92); text-decoration:none; font-size:0.95rem }
+.nav-link{ color:rgba(255,255,255,0.92); text-decoration:none; font-size:0.95rem; position:relative; z-index:1; overflow:visible }
 .nav-link + .nav-link{ margin-left:0 }
 
 /* gradient fill hover for header nav links (underline -> full fill) */
@@ -142,6 +142,37 @@
 	background-size: 100% 100%;
 	border-radius: 8px;
 	color: #fff;
+}
+
+/* glowing halo behind header nav links */
+.nav-link::after{
+	content: "";
+	position:absolute;
+	left:-14%; right:-14%; top:-40%; bottom:-40%;
+	border-radius:12px;
+	background: radial-gradient(ellipse at center, rgba(9,198,255,0.10), rgba(139,92,246,0.07) 45%, transparent 65%);
+	filter: blur(14px);
+	opacity:0;
+	transition: opacity 260ms ease, transform 260ms ease, filter 260ms ease;
+	z-index:0;
+	pointer-events:none;
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after{
+	opacity:1;
+	transform: translateY(-3px) scale(1.02);
+	filter: blur(18px);
+}
+
+.nav-link:hover,
+.nav-link:focus-visible{
+	box-shadow: 0 8px 28px rgba(9,198,255,0.08), 0 20px 60px rgba(139,92,246,0.06);
+}
+
+@media (prefers-reduced-motion: reduce){
+	.nav-link::after{ transition:none; }
+	.nav-link{ transition:none }
 }
 
 /* Push page content below the fixed header */
