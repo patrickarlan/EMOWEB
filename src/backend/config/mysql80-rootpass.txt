@@ -1,0 +1,5 @@
+MYSQL ROOT PASS: "XO28thxotwod"
+
+
+//kill all nodes
+Stop-Process -Name node -Force

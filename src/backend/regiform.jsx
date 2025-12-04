@@ -14,16 +14,48 @@ export default function Regiform() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
+        setError("");
+        
         if (password !== confirmPassword) {
-            alert("Passwords do not match");
+            setError("Passwords do not match");
             return;
         }
-        // Placeholder: send registration payload to server
-        console.log("register", { firstName, middleInitial, lastName, contactNumber, username, email });
-        alert("Registration submitted (placeholder)");
+        if (!username || !email || !password) {
+            setError("Username, email, and password are required");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ firstName, middleInitial, lastName, contactNumber, username, email, password })
+            });
+            const data = await response.json();
+            
+            if (!response.ok) {
+                setError(data.error || 'Registration failed');
+                setLoading(false);
+                return;
+            }
+            
+            // Success
+            alert('Registration successful! User ID: ' + data.id);
+            // Optional: redirect to sign-in or clear form
+            setFirstName(""); setMiddleInitial(""); setLastName(""); setContactNumber("");
+            setUsername(""); setEmail(""); setPassword(""); setConfirmPassword("");
+        } catch (err) {
+            setError('Network error. Make sure the server is running.');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -32,6 +64,12 @@ export default function Regiform() {
                 <h2 className="subtext">REGISTER</h2>
                 <h1 className="introtext">Create your account</h1>
                 <p className="desctext">Please provide the information below to register.</p>
+
+                {error && (
+                    <div style={{color:'#ff6b6b', background:'rgba(255,107,107,0.1)', padding:'10px 14px', borderRadius:'8px', marginBottom:'12px', width:'100%', maxWidth:420, textAlign:'center'}}>
+                        {error}
+                    </div>
+                )}
 
                 <form className="sf-form" onSubmit={handleSubmit}>
                     <fieldset className="regiform-fieldset regiform-tight">
@@ -63,8 +101,8 @@ export default function Regiform() {
 
                     <div className="regiform-spacer-sm" />
 
-                    <button type="submit" className="registerbutton" aria-label="Create account">
-                        <span className="register-inner">Create Account</span>
+                    <button type="submit" className="registerbutton" aria-label="Create account" disabled={loading}>
+                        <span className="register-inner">{loading ? 'Creating...' : 'Create Account'}</span>
                         <span className="register-bar bar-1" aria-hidden="true" />
                         <span className="register-bar bar-2" aria-hidden="true" />
                         <span className="register-bar bar-3" aria-hidden="true" />

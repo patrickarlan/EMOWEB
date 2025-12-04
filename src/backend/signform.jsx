@@ -7,6 +7,8 @@ export default function SignForm() {
     const [password, setPassword] = useState("");
     const [remember, setRemember] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         try {
@@ -20,16 +22,43 @@ export default function SignForm() {
         }
     }, []);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        // placeholder submit logic
-        if (remember) {
-            try { localStorage.setItem("emo_username", username); } catch (e) {}
-        } else {
-            try { localStorage.removeItem("emo_username"); } catch (e) {}
+        setError("");
+        setLoading(true);
+
+        try {
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.error || "Login failed");
+                setLoading(false);
+                return;
+            }
+
+            // Handle remember me
+            if (remember) {
+                try { localStorage.setItem("emo_username", username); } catch (e) {}
+            } else {
+                try { localStorage.removeItem("emo_username"); } catch (e) {}
+            }
+
+            // Show success message
+            alert(`Welcome back, ${data.username}! Login successful.`);
+            
+            // Clear form
+            setPassword("");
+            setLoading(false);
+        } catch (err) {
+            setError("Network error. Please try again.");
+            setLoading(false);
         }
-        // TODO: integrate with auth
-        console.log("submit", { username, password, remember });
     }
 
     return (
@@ -40,11 +69,17 @@ export default function SignForm() {
                 <h1 className="introtext">WELCOME TO EMOWEB</h1>
                 <p className="desctext">Please enter your username and password to sign in.</p>
 
+                {error && (
+                    <div className="error-message" role="alert">
+                        {error}
+                    </div>
+                )}
+
                 <form className="sf-form" onSubmit={handleSubmit}>
-                    <input id="username" className="usertextbox" type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
+                    <input id="username" className="usertextbox" type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required />
 
                     <div className="sf-password-row">
-                      <input id="password" className="passtextbox" type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+                      <input id="password" className="passtextbox" type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
                       <button type="button" aria-pressed={showPassword} className="sf-showpw" onClick={() => setShowPassword(s => !s)}>{showPassword ? 'Hide' : 'Show'}</button>
                     </div>
 
@@ -56,7 +91,9 @@ export default function SignForm() {
                                                 <a href="#" className="sf-forgot">Forgot password?</a>
                                         </div>
 
-                        <button className="submitbutton" type="submit">Sign In</button>
+                        <button className="submitbutton" type="submit" disabled={loading}>
+                            {loading ? "Signing in..." : "Sign In"}
+                        </button>
                 </form>
 
                 <div className="sf-divider" aria-hidden="true">
