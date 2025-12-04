@@ -4,7 +4,12 @@ import "../styles/landingpage.css";
 export default function LandingPage() {
 	return (
     
-		<div className="min-h-screen flex items-center justify-center p-4">
+			<div className="min-h-screen flex flex-col items-center justify-center p-4">
+			<div className="landing-hero">
+				<p className="hero-pretext">Welcome to EMO AI</p>
+				<h2 className="hero-title">EMO AI: Wear Your Emotions, Crafted by AI.</h2>
+				<p className="hero-sub">Artfully transform emotions into wearable stories by AI, reflecting your deepest self in every hue and pattern.</p>
+			</div>
 			<div className="landing-wrapper">
 				<div className="left-stack">
 					<div className="side-panel first-panel">Panel 1</div>

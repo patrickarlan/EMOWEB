@@ -115,7 +115,7 @@
     position: absolute;
     left: 0; top: 0; bottom: 0; right: 0;
     border-radius: 12px;
-    background: linear-gradient(90deg, rgba(9,198,255,0.92), rgba(139,92,246,0.92));
+    background: linear-gradient(90deg, rgba(255, 157, 9, 0.92), rgba(246, 110, 92, 0.92));
     transform-origin: left center;
     transform: scaleX(0);
     transition: transform 360ms cubic-bezier(.2,.9,.2,1);
