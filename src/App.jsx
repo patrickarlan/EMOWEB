@@ -9,6 +9,7 @@ import AboutUs from "./main/aboutus";
 import Contact from "./main/contact";
 import Terms from "./main/terms";
 import Privacy from "./main/privacy";
+import SignForm from "./backend/signform";
 import "./styles/styles.css";
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/signform" element={<SignForm />} />
           </Routes>
         </main>
 

@@ -1,0 +1,78 @@
+import React, { useEffect, useState } from "react";
+import "../styles/signform.css";
+
+export default function SignForm() {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [remember, setRemember] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem("emo_username");
+            if (saved) {
+                setUsername(saved);
+                setRemember(true);
+            }
+        } catch (e) {
+            // ignore storage errors
+        }
+    }, []);
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        // placeholder submit logic
+        if (remember) {
+            try { localStorage.setItem("emo_username", username); } catch (e) {}
+        } else {
+            try { localStorage.removeItem("emo_username"); } catch (e) {}
+        }
+        // TODO: integrate with auth
+        console.log("submit", { username, password, remember });
+    }
+
+    return (
+        <main className="signform-container flex flex-col min-h-screen items-center justify-center">
+            <div className="signform">
+                <h2 className="subtext">SIGN IN</h2>
+                <img src="src/pics/emoweb.png" alt="EMOWEB Logo" className="signform-logo" />
+                <h1 className="introtext">WELCOME TO EMOWEB</h1>
+                <p className="desctext">Please enter your username and password to sign in.</p>
+
+                <form className="sf-form" onSubmit={handleSubmit}>
+                    <input id="username" className="usertextbox" type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
+
+                    <div className="sf-password-row">
+                      <input id="password" className="passtextbox" type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+                      <button type="button" aria-pressed={showPassword} className="sf-showpw" onClick={() => setShowPassword(s => !s)}>{showPassword ? 'Hide' : 'Show'}</button>
+                    </div>
+
+                                        <div className="sf-controls">
+                                                <label className="sf-remember">
+                                                    <input type="checkbox" className="remember-checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
+                                                    <span className="remlabel">Remember me</span>
+                                                </label>
+                                                <a href="#" className="sf-forgot">Forgot password?</a>
+                                        </div>
+
+                        <button className="submitbutton" type="submit">Sign In</button>
+                </form>
+
+                <div className="sf-divider" aria-hidden="true">
+                    <span className="sf-line" />
+                    <span className="sf-or">or</span>
+                    <span className="sf-line" />
+                </div>
+
+                <button className="registerbutton">
+                    <span className="register-inner">Register
+                        <span className="register-bar bar-1" aria-hidden="true" />
+                        <span className="register-bar bar-2" aria-hidden="true" />
+                        <span className="register-bar bar-3" aria-hidden="true" />
+                        <span className="register-bar bar-4" aria-hidden="true" />
+                    </span>
+                </button>
+            </div>
+        </main>
+    );
+}
