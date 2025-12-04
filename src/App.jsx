@@ -10,6 +10,7 @@ import Contact from "./main/contact";
 import Terms from "./main/terms";
 import Privacy from "./main/privacy";
 import SignForm from "./backend/signform";
+import Regiform from "./backend/regiform";
 import "./styles/styles.css";
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/signform" element={<SignForm />} />
+            <Route path="/register" element={<Regiform />} />
           </Routes>
         </main>
 

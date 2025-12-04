@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.regiform-container{
+    margin-bottom:50px;
+    margin-top:80px;
+}
+
+.regiform {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    justify-self: center;
+    justify-content: center;
+    text-align: center;
+    max-width:520px;
+    margin:12px auto;
+    padding:42px 30px; /* more top padding so header text doesn't escape */
+    padding-bottom:36px;
+    min-height: 420px; /* let content determine height rather than forcing 600px */
+    border-radius:14px;
+    box-sizing:border-box;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.04);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 12px 40px rgba(6,22,44,0.5);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    overflow:visible;
+    /* smooth transform and shadow transition for both hover-in and hover-out */
+    transition: transform 500ms ease-in-out, box-shadow 420ms ease-in-out;
+}
+
+.regiform:hover {
+    transform: scale(1.025);
+    /* subtle, larger shadow on hover that will fade in/out smoothly */
+    box-shadow: 0 20px 80px rgba(18, 153, 206, 0.55);
+}
+
+.rf-divider {
+    height:1px;
+    width:100%;
+    max-width:420px;
+    background: linear-gradient(90deg, rgba(158, 158, 158, 0.5), rgba(41, 152, 243, 0.616));
+    border-radius:2px;
+    margin:8px 0; /* balanced top/bottom spacing provided by divider only */
+}
+
+/* Scoped form controls for regiform (mirrors signform inputs) */
+.regiform .subtext{
+    display:inline-block;
+    font-size: 3rem;
+    font-weight:700;
+    margin-top: -8px;
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #ffffff 0%, #8be9ff 25%, #8b5cf6 55%, #ff88d1 85%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gradientShift 6s linear infinite;
+}
+
+.regiform .introtext{
+    display:inline-block;
+    font-weight:800;
+    background: #ffffff;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.12);
+}
+
+.regiform input,
+.regiform .usertextbox,
+.regiform .passtextbox{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.12);
+    color: #fff;
+    margin:10px 0;
+    outline:none;
+    transition: box-shadow 160ms ease, border-color 140ms ease;
+    max-width:420px;
+    box-sizing:border-box;
+}
+.regiform input::placeholder,
+.regiform .usertextbox::placeholder,
+.regiform .passtextbox::placeholder{ color: rgba(255,255,255,0.62); }
+.regiform input:focus,
+.regiform .usertextbox:focus,
+.regiform .passtextbox:focus{ box-shadow: 0 8px 30px rgba(8,18,40,0.35); border-color: rgba(255,255,255,0.16); }
+
+.regiform .submitbutton{
+    width:100%;
+    max-width:460px;
+    padding:12px 20px;
+    border-radius:12px;
+    border:0;
+    background: linear-gradient(90deg,#06c9ff,#8b5cf6);
+    color:#fff;
+    font-weight:700;
+    font-family: inherit;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    cursor:pointer;
+    display:inline-block;
+    box-sizing:border-box;
+}
+
+.regiform .sf-form{ display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; }
+.regiform .sf-password-row{ position:relative; width:100%; max-width:420px; }
+.regiform .sf-showpw{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    background: transparent;
+    border: none;
+    color: rgba(200,210,220,0.86);
+    cursor: pointer;
+    padding:6px 8px;
+    border-radius:8px;
+}
+.regiform .sf-showpw:focus{ outline:2px solid rgba(139,92,246,0.12); }
+
+.regiform .desctext{
+  max-width:520px;
+  color: rgba(200,210,220,0.72);
+  font-size:0.98rem;
+  line-height:1.45;
+  text-align:center;
+  margin:6px 0 12px 0;
+}
+
+/* Fieldset and legend helpers (replace inline styles) */
+.regiform-fieldset{
+        width: 100%;
+        max-width: 420px;
+        border: none;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+}
+.regiform-legend{
+    color: rgba(200,210,220,0.85);
+    margin-bottom: 8px;
+    font-size: 0.98rem;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.regiform-spacer-sm{ height: 12px; }
+
+/* tighter spacer used between first fieldset and divider */
+.regiform-spacer-tight{ height: 0; }
+
+/* remove extra bottom margin from the last input in the first fieldset so spacing is driven by the divider margins */
+.regiform-tight .usertextbox:last-child,
+.regiform-tight .passtextbox:last-child{
+    margin-bottom: 0;
+}
+
+.regiform-backlink{ color: rgba(200,210,220,0.9); }
+
+/* Ensure the register/submit button inherits the page font and sizing when used inside regiform */
+.regiform .registerbutton,
+.regiform .register-inner {
+    font-family: inherit;
+    font-size: inherit;
+}

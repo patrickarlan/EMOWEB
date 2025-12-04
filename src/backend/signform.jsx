@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles/signform.css";
 
 export default function SignForm() {
@@ -64,14 +65,14 @@ export default function SignForm() {
                     <span className="sf-line" />
                 </div>
 
-                <button className="registerbutton">
+                <Link to="/register" className="registerbutton no-underline" aria-label="Register">
                     <span className="register-inner">Register
                         <span className="register-bar bar-1" aria-hidden="true" />
                         <span className="register-bar bar-2" aria-hidden="true" />
                         <span className="register-bar bar-3" aria-hidden="true" />
                         <span className="register-bar bar-4" aria-hidden="true" />
                     </span>
-                </button>
+                </Link>
             </div>
         </main>
     );

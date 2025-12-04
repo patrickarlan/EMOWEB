@@ -37,7 +37,16 @@ return (
                             <h2 className="term-title">6. Governing Law</h2>
                             <p>These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which EMOWEB operates.</p>
                         </div>
-            <p className="outro"><Link to="/contact" className="outro-link"><span className="outro-inner">If you have any questions about these terms, please contact us.<span className="outro-bar bar-1" aria-hidden="true"></span><span className="outro-bar bar-2" aria-hidden="true"></span><span className="outro-bar bar-3" aria-hidden="true"></span></span></Link></p>
+            <p className="outro">
+                <Link to="/contact" className="outro-link">
+                <span className="outro-inner">
+                    If you have any questions about these terms, please contact us.
+                        <span className="outro-bar bar-1" aria-hidden="true"></span>
+                        <span className="outro-bar bar-2" aria-hidden="true"></span>
+                        <span className="outro-bar bar-3" aria-hidden="true"></span>
+                </span>
+                </Link>
+            </p>
         </div>
     </main>
 );

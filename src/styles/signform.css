@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 .signform {
+    position: relative;
+    z-index: 0;
     width: 100%;
     justify-self: center;
     justify-content: center;
@@ -24,7 +26,17 @@
     align-items:center;
     gap:12px;
     overflow:visible;
+    /* smooth transform and shadow transition for both hover-in and hover-out */
+    transition: transform 500ms ease-in-out, box-shadow 420ms ease-in-out;
 }
+
+.signform:hover {
+    transform: scale(1.025);
+    /* subtle, larger shadow on hover that will fade in/out smoothly */
+    box-shadow: 0 20px 80px rgba(18, 153, 206, 0.55);
+}
+
+
 
 .subtext{
     display:inline-block;
@@ -90,6 +102,11 @@
     background: linear-gradient(90deg,#06c9ff,#8b5cf6);
     color:#fff;
     font-weight:700;
+    /* match register button typography */
+    font-family: inherit;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
     cursor:pointer;
     display:inline-block;
     box-sizing:border-box;
