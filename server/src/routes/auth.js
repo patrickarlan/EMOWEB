@@ -1,8 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const pool = require('../db');
+const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
+
+const JWT_SECRET = process.env.JWT_SECRET || 'please-change-this-secret';
+const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d';
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
@@ -41,7 +46,17 @@ router.post('/login', async (req, res) => {
 		const match = await bcrypt.compare(password, user.password_hash);
 		if (!match) return res.status(401).json({ error: 'Invalid username or password' });
 
-		// Success - return user info (no password hash)
+		// Success - sign JWT and set as HttpOnly cookie
+		const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+
+		// set cookie (HttpOnly, secure in production)
+		res.cookie('token', token, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+		});
+
 		return res.status(200).json({ id: user.id, username: user.username, email: user.email });
 	} catch (err) {
 		console.error('Login error', err);
@@ -49,4 +64,25 @@ router.post('/login', async (req, res) => {
 	}
 });
 
+// GET /api/auth/me - returns current user if authenticated
+router.get('/me', requireAuth, async (req, res) => {
+	try {
+		const { id } = req.user || {};
+		if (!id) return res.status(401).json({ error: 'Not authenticated' });
+		const [rows] = await pool.execute('SELECT id, first_name AS firstName, middle_initial AS middleInitial, last_name AS lastName, contact_number AS contactNumber, username, email, created_at AS createdAt FROM users WHERE id = ? LIMIT 1', [id]);
+		if (!rows.length) return res.status(404).json({ error: 'User not found' });
+		return res.json(rows[0]);
+	} catch (err) {
+		console.error('Me error', err);
+		return res.status(500).json({ error: 'Server error' });
+	}
+});
+
+// POST /api/auth/logout - clears auth cookie
+router.post('/logout', (req, res) => {
+	res.clearCookie('token', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax' });
+	return res.json({ ok: true });
+});
+
 module.exports = router;
+

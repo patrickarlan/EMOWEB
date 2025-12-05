@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/signform.css";
 
 export default function SignForm() {
@@ -9,6 +9,7 @@ export default function SignForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         try {
@@ -31,6 +32,7 @@ export default function SignForm() {
             const response = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: 'include', // allow HttpOnly cookie to be set
                 body: JSON.stringify({ username, password }),
             });
 
@@ -51,6 +53,8 @@ export default function SignForm() {
 
             // Show success message
             alert(`Welcome back, ${data.username}! Login successful.`);
+            // Redirect to user area
+            navigate('/userdash');
             
             // Clear form
             setPassword("");
