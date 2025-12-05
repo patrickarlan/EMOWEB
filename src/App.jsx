@@ -11,6 +11,8 @@ import Terms from "./main/terms";
 import Privacy from "./main/privacy";
 import SignForm from "./backend/signform";
 import Regiform from "./backend/regiform";
+import UserDash from "./backend/dashboards/userdash/userdash";
+
 import "./styles/styles.css";
 
 export default function App() {
@@ -30,6 +32,7 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/signform" element={<SignForm />} />
             <Route path="/register" element={<Regiform />} />
+            <Route path="/userdash" element={<UserDash />} />
           </Routes>
         </main>
 
