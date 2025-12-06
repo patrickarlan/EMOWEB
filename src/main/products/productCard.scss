@@ -1,23 +1,31 @@
-// Product Card (adapted + extended from examples/example.scss)
-
-// Palette
+// Product Preview
+// Pallete
 $dark-blue: #31353d;
 $green: #9bb6aa;
 
+// Body Color
+$body-color: #aa2828;
+
+// Header
+$header-color: $dark-blue;
+
 // Typography
-$base-font-family: 'MavenProRegular', Arial, Tahoma, Verdana, sans-serif;
+$base-font-family: 'MavenProRegular', arial, tahoma, trebuchet ms, verdana;
 $base-font-size: 14px;
 
 // Mixins
+
 @mixin prefix($prop, $val) {
-  -webkit-#{$prop}: $val;
-  -moz-#{$prop}: $val;
-  -o-#{$prop}: $val;
-  #{$prop}: $val;
+	@each $prefix in -webkit-, -moz-, -o-, '' {
+		#{$prefix}#{$prop}: $val;
+	}
 }
 
 @mixin transparency($opacity){
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=($opacity * 100))";
   filter: alpha(opacity=($opacity * 100));
+  -moz-opacity: $opacity;
+  -khtml-opacity: $opacity; 
   opacity: $opacity;
 }
 
@@ -29,148 +37,284 @@ $base-font-size: 14px;
     clear: both;
   }
 }
+*,
+*::after,
+*::before {
+  @include prefix(box-sizing, border-box);
+}
 
-*,*::after,*::before{ box-sizing: border-box; }
+//  Globals
+//----------------------------------------
+p {
+  margin: 0 0 30px;
+}
 
-/* Scoped demo wrapper (keeps global-like styles from leaking into app) */
-.product-demo{
-  font-family: $base-font-family;
+a {
+  text-decoration: none;
+}
+
+//  Titles
+//----------------------------------------
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
+  color: $dark-blue;
+  margin: 0;
+}
+
+//  Lists
+//----------------------------------------
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+//  Defaults
+//----------------------------------------
+abbr {
+  cursor: help;
+}
+
+/* Scoped component wrapper replaces global body styles so we don't override the app background */
+.product-demo {
+  color: inherit;
   font-size: $base-font-size;
-  color: #aaa;
-  background: linear-gradient(180deg,#0f3142 0%, #123a51 100%);
-  padding: 20px;
-  display: inline-block;
-  border-radius: 12px;
+  font-family: $base-font-family;
 }
 
-.product-wrapper {
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0;
+  line-height: 0;
+}
+
+main[role="main"] {
+  max-width: 100%;
+  margin: 20px auto;
   position: relative;
-  display: inline-flex;
+  @extend %clearfix;
 }
 
-
-.product{
-  background: #fff;
+// Product Box
+//----------------------------------------
+.product {
+  background: #ffffff;
   max-width: 300px;
   position: relative;
   z-index: 15;
-  margin: 0 auto;
-  @include prefix(box-shadow, 0 6px 14px rgba(0,0,0,0.25));
-  border-radius: 10px;
-  
-  /* THIS makes sidebar hide properly (important!) */
-  overflow: hidden; 
+  margin:0 auto;
+  @include prefix(box-shadow, 0 3px 5px rgba(0,0,0,0.2));
+  transition: filter 0.3s ease, transform 0.3s ease, z-index 0s 0.3s;
+  filter: blur(0px);
 
-  figure{ margin: 18px auto 0; text-align: center; }
-
-  .product-image{
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: inline-block;
-    background: #fff;
-    padding: 6px;
-    position: relative;
-    z-index: 3;
-  }
-
-  .product-description{
+  /* Inner panel that will scale on hover without affecting sidebar */
+  .product-panel{
+    /* keep panel visually aligned with the product background */
+    background: transparent;
+    transition: transform .3s cubic-bezier(.2,.9,.2,1), box-shadow .3s ease;
+    transform-origin: center center;
+    will-change: transform, box-shadow;
+    /* ensure shadows don't get clipped */
     position: relative;
     z-index: 2;
-    background: transparent;
-    @extend %clearfix;
-    padding: 16px 16px 22px 16px;
+  }
 
-    .info{
-      color: #6b7a86;
-      font-size: 0.9em;
-      width: 70%;
-      float: left;
-
-      h1{ font-size: 16px; margin:0 0 6px; color:#0f2b3a; font-weight:700; }
-      p{ margin:0; line-height:1.35; color:#7b8994; }
+  /* Hover effect: larger scale for spacing + glowy shadow on the panel only */
+  &:hover {
+    z-index: 20;
+    transition: filter 0.3s ease, transform 0.3s ease, z-index 0s 0s;
+    
+    .product-panel {
+      transform: scale(1.08);
+      box-shadow: 0 8px 40px rgba(19, 141, 211, 0.5), 0 0 50px rgba(139,92,246,0.2);
+      transition: ease-in-out .3s;
     }
 
-    .price{
-      width: 30%;
-      float: left;
-      color: $green;
-      font-size: 1.4em;
-      position: relative;
-      margin-top: 6px;
-      font-weight: 700;
-      text-align: right;
+    .product-sidebar {
+      transform: scale(1.08);
+      box-shadow: 0 8px 40px rgba(19, 141, 211, 0.5), 0 0 50px rgba(139,92,246,0.2);
+      transition: ease-in-out .3s;
     }
   }
 
-  /* ===========================
-     🔹 SLIDE-OUT SIDEBAR
-     =========================== */
+  // .product-image {
+  // }
+
+  .product-description {
+    position: relative;
+    z-index: 15;
+    background: #fff;
+    @extend %clearfix;
+
+    .info {
+      padding: 15px;
+      color: #aaa;
+      font-size: 0.85em;
+      width: 75%;
+      float: left;
+
+      h1 {
+        font-size: 20px;
+        margin: 0 0 5px;
+      }
+      p {
+        margin-bottom: 15px;
+        line-height: 1.3em;
+      }
+    }
+    .price {
+      width: 25%;
+      float: left;
+      color: $green;
+      font-size: 3.5em;
+      position: relative;
+      margin-top: 25px;
+
+      &::before {
+        content: '$';
+        position: absolute;
+        top: 0;
+        left: -10px;
+        font-size: 0.35em;
+      }
+    }
+  }
 
   .product-sidebar {
+    height: 100%;
+    background: $dark-blue;
+    width: 50px;
     position: absolute;
     top: 0;
     right: 0;
-    width: 50px;
-    height: 100%;
-    background: rgba(3, 190, 247, 0.938);
-    border-radius: 0 2px 2px 0;
-    z-index: 5;
+    z-index: -1;
+    border-radius: 5px;
+    transition: right .3s ease, transform .3s ease;
+    transform-origin: left center;
+    @include prefix(border-radius, 0 2px 2px 0);
 
-    /* Sidebar starts hidden OUTSIDE the card */
-    transform: translateX(100%);
-    transition: transform .35s ease;
-    overflow: hidden;
-
-
-    /* BUTTONS INSIDE SIDEBAR */
     button {
+      border: 0;
+      border-bottom: 1px solid rgba(0,0,0,0.2);
+      color: #fff;
+      padding: 0.9em;
+      font-size: 0.8em;
       width: 50px;
       height: 50px;
-      color: #fff;
-      font-size: 0.8em;
-      border: 0;
-      border-bottom: 1px solid rgba(0,0,0,0.25);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-left: 14px;
       overflow: hidden;
+      @include prefix(transition, all .4s ease);
 
-      transition: width .35s ease,
-                  background-color .3s ease,
-                  opacity .3s ease;
+      &.buy {
+        background: transparent url("https://raw.githubusercontent.com/brunodsgn/productpreview/master/assets/img/icons/buy.png") no-repeat 15px;
+        
+        &:hover {
+          background-color: $green;
+          border-color: $green;
+        }
+      }
 
-      svg {
-        width: 18px;
-        height: 18px;
-        flex-shrink: 0;
-        transform: scale(1);
-        transition: transform .25s ease;
+      &.info {
+        background: transparent url("https://raw.githubusercontent.com/brunodsgn/productpreview/master/assets/img/icons/info.png") no-repeat 15px;
+        
+        &:hover {
+          background-color: #4a9eff;
+          border-color: #4a9eff;
+        }
+      }
+
+      &.cart {
+        background: transparent url("../../pics/cart.png") no-repeat 15px center;
+        background-size: 20px 20px;
+        
+        &:hover {
+          background-color: #f4c542;
+          border-color: #f4c542;
+        }
       }
 
       span {
-        opacity: 0;
-        margin-left: 6px;
+        @include transparency(0);
         white-space: nowrap;
-        transition: opacity .3s ease;
+        margin-left: 30px;        
       }
 
       &:hover {
         width: 130px;
-        background-color: $green;
-        span { opacity: 1; }
+        position: relative;
+        background-position: 15px center;
       }
+
+      &:hover span {
+        @include transparency(1);
+      }
+
     }
   }
 
-
-  /* 🔹 Sidebar slides out only when product card is hovered */
-  &:hover .product-sidebar {
-    transform: translateX(0%);
+  &:hover .product-sidebar{
+    right: -60px;
   }
 }
 
-@media screen and (max-width: 480px){ .product{ max-width: 320px; } }
+// Media Queries
+//----------------------------------------
+@media screen and (max-width: 480px) {
+  #content {
+    margin-top: 60px;
+  }
+
+  .product {
+    .product-sidebar {
+      width: 100%;
+      height: 50px;
+      bottom: 0px;
+      left: 0;
+      top: inherit;
+      @include prefix(border-radius, 0 0px 2px 2px);
+      @include prefix(transition, bottom .3s ease);
+    }
+    &:hover .product-sidebar {
+      bottom: -50px;
+    }
+  }
+}
+
+/* Center the product on the screen */
+.product-root {
+  display: flex;
+  gap: 5rem; /* increased gap to accommodate sidebar slide-out */
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap; /* allow cards to wrap on smaller screens */
+  /* reduce vertical extent so card doesn't sit in a giant empty viewport */
+  min-height: 68vh;
+  padding: 1rem 3rem 1rem 6rem; /* more left padding to account for sidebar slide-out space on right */
+
+  /* Blur non-hovered cards when any card is hovered */
+  &:has(.product:hover) .product:not(:hover) {
+    filter: blur(4px);
+    opacity: 0.6;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+  }
+}
+
+.product-root .product {
+  margin: 0; /* reset any margins so centering is exact */
+}
+
+@media (max-height: 700px) {
+  .product-root { min-height: 60vh; }
+}
+
+@media (max-width: 480px) {
+  .product-root { align-items: flex-start; padding-top: 2rem; padding-bottom: 2rem; }
+}
+
+@media screen and (max-width: 360px) {
+  .product .product-sidebar {
+    bottom: -50px;
+  }
+}
+
 
