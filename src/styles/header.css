@@ -210,6 +210,23 @@
 .search-button:hover,
 .profile-button:hover{ background:rgba(15,23,42,0.04); color:var(--text); transform:translateY(-1px); }
 
+/* cart button matches the other header control sizes and hover behaviour */
+.cart-button{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	width:36px;
+	height:36px;
+	padding:0;
+	margin:0;
+	border-radius:0.375rem;
+	background: rgba(255,255,255,0.04);
+	border:0;
+	cursor:pointer;
+	color: rgba(255,255,255,0.92);
+}
+.cart-button:hover{ background:rgba(15,23,42,0.04); color:var(--text); transform:translateY(-1px); }
+
 /* profile placeholder circle when no image provided */
 .profile-button svg{ border-radius:9999px; }
 
