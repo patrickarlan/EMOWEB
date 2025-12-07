@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './userdash.css';
 
-export default function USSidebar() {
+export default function USSidebar({ activePanel, setActivePanel }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -110,9 +110,23 @@ export default function USSidebar() {
             <li className="us-nav-item"><Link to="/products" className="us-nav-link">Products</Link></li>
             <li className="us-nav-item"><Link to="/contact" className="us-nav-link">Contact Us</Link></li>
             <li className="us-nav-divider" aria-hidden />
-            <li className="us-nav-item"><Link to="/user/profile" className="us-nav-link">Profile</Link></li>
+            <li className="us-nav-item">
+              <button 
+                onClick={() => setActivePanel("profile")} 
+                className={`us-nav-link ${activePanel === "profile" ? "active" : ""}`}
+              >
+                Profile
+              </button>
+            </li>
             <li className="us-nav-item"><Link to="/user/orders" className="us-nav-link">Orders</Link></li>
-            <li className="us-nav-item"><Link to="/user/settings" className="us-nav-link">Settings</Link></li>
+            <li className="us-nav-item">
+              <button 
+                onClick={() => setActivePanel("settings")} 
+                className={`us-nav-link ${activePanel === "settings" ? "active" : ""}`}
+              >
+                Settings
+              </button>
+            </li>
             <li className="us-nav-item"><Link to="/user/activity" className="us-nav-link">Activity</Link></li>
             <li className="us-nav-divider" aria-hidden />
         </ul>

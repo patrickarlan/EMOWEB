@@ -6,6 +6,7 @@ const path = require('path');
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const uploadRoutes = require('./routes/upload');
+const accountRoutes = require('./routes/account');
 
 const app = express();
 app.use(express.json());
@@ -25,5 +26,6 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/account', accountRoutes);
 
 module.exports = app;
