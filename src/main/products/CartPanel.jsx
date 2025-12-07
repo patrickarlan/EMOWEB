@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import Notification from "../../components/Notification";
 import "./cartPanel.scss";
 
 export default function CartPanel({ product, onClose }) {
   const [quantity, setQuantity] = useState(1);
+  const [notification, setNotification] = useState(null);
 
   const handleQuantityChange = (change) => {
     const newQuantity = quantity + change;
@@ -11,20 +13,47 @@ export default function CartPanel({ product, onClose }) {
     }
   };
 
-  const handleAddToCart = () => {
-    // Handle add to cart logic here
-    console.log({
-      product: product.title,
-      quantity,
-      total: product.price * quantity
-    });
-    onClose();
+  const handleAddToCart = async () => {
+    try {
+      const response = await fetch('/api/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          productName: product.title,
+          productImage: product.img,
+          quantity: quantity,
+          price: product.price
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add to cart');
+      }
+
+      setNotification({ message: 'Item added to cart successfully!', type: 'success' });
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    } catch (err) {
+      console.error('Cart error:', err);
+      setNotification({ message: 'Failed to add item to cart', type: 'error' });
+    }
   };
 
   const totalPrice = (product.price * quantity).toFixed(2);
 
   return (
     <>
+      {notification && (
+        <Notification 
+          message={notification.message} 
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <div className="cart-overlay" onClick={onClose}></div>
       <div className="cart-panel">
         <button className="cart-close" onClick={onClose}>×</button>

@@ -154,14 +154,12 @@ $primary-blue: #4a9eff;
       }
 
       .payment-options {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
 
         .payment-option {
-          flex: 1;
-          max-width: 150px;
-          padding: 12px 20px;
+          padding: 12px 16px;
           border: 2px solid #ddd;
           border-radius: 8px;
           cursor: pointer;
@@ -177,7 +175,7 @@ $primary-blue: #4a9eff;
           }
 
           span {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: #666;
           }
@@ -257,6 +255,50 @@ $primary-blue: #4a9eff;
   }
 }
 
+// Success message
+.order-success {
+  padding: 60px 40px;
+  text-align: center;
+
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #9bb6aa, #6fa88d);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 48px;
+    color: white;
+    animation: scaleIn 0.5s ease;
+  }
+
+  h2 {
+    color: $dark-blue;
+    font-size: 24px;
+    margin: 0 0 12px 0;
+  }
+
+  p {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+// Error message
+.order-error {
+  padding: 12px 16px;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
 // Animations
 @keyframes fadeIn {
   from {
@@ -275,6 +317,17 @@ $primary-blue: #4a9eff;
   to {
     opacity: 1;
     transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

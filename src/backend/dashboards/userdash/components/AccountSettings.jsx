@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./styles/AccountSettings.css";
+import PasswordVerification from "../../../../components/PasswordVerification";
 
 export default function AccountSettings() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ export default function AccountSettings() {
   });
   const [deactivateDays, setDeactivateDays] = useState(7);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+  const [showPasswordVerification, setShowPasswordVerification] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -141,6 +143,11 @@ export default function AccountSettings() {
     }
   };
 
+  const handlePasswordVerified = () => {
+    setShowPasswordVerification(false);
+    setShowDeactivateConfirm(true);
+  };
+
   if (loading) {
     return (
       <>
@@ -152,6 +159,13 @@ export default function AccountSettings() {
 
   return (
     <>
+      <PasswordVerification
+        isOpen={showPasswordVerification}
+        onClose={() => setShowPasswordVerification(false)}
+        onVerify={handlePasswordVerified}
+        targetSection="Account Deactivation"
+      />
+
       <h3 className="account-title">Account Settings</h3>
       <p className="account-subtitle">Manage your account security and preferences</p>
 
@@ -278,7 +292,7 @@ export default function AccountSettings() {
           {!showDeactivateConfirm ? (
             <button
               type="button"
-              onClick={() => setShowDeactivateConfirm(true)}
+              onClick={() => setShowPasswordVerification(true)}
               className="btn btn-deactivate"
             >
               Deactivate Account

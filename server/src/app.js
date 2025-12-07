@@ -7,6 +7,8 @@ const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const uploadRoutes = require('./routes/upload');
 const accountRoutes = require('./routes/account');
+const ordersRoutes = require('./routes/orders');
+const cartRoutes = require('./routes/cart');
 
 const app = express();
 app.use(express.json());
@@ -27,5 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/cart', cartRoutes);
 
 module.exports = app;

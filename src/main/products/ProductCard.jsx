@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./productCard.scss"; // ensure your css/scss file is linked
 import OrderPanel from "./OrderPanel";
 import CartPanel from "./CartPanel";
+import Notification from "../../components/Notification";
 import emoex from "../../pics/EMOEX.png";
 import emoex2 from "../../pics/EMOEX2.png";
 import emoex3 from "../../pics/EMOEX3.png";
@@ -12,6 +13,7 @@ export default function ProductCard() {
   const [orderPanelOpen, setOrderPanelOpen] = useState(false);
   const [cartPanelOpen, setCartPanelOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   const handleInfoClick = (index) => {
     setFlipped(prev => {
@@ -21,14 +23,48 @@ export default function ProductCard() {
     });
   };
 
-  const handleBuyClick = (product) => {
-    setSelectedProduct(product);
-    setOrderPanelOpen(true);
+  const checkAuthAndProceed = async (action, product) => {
+    try {
+      const authCheck = await fetch('/api/auth/me', { credentials: 'include' });
+      if (!authCheck.ok) {
+        // User not logged in - show notification and redirect
+        setNotification({ 
+          message: 'Please sign in to continue', 
+          type: 'info' 
+        });
+        setTimeout(() => {
+          window.location.href = '/signform';
+        }, 2000);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setNotification({ 
+        message: 'Please sign in to continue', 
+        type: 'info' 
+      });
+      setTimeout(() => {
+        window.location.href = '/signform';
+      }, 2000);
+      return false;
+    }
   };
 
-  const handleCartClick = (product) => {
-    setSelectedProduct(product);
-    setCartPanelOpen(true);
+  const handleBuyClick = async (product) => {
+    const isAuthenticated = await checkAuthAndProceed('order', product);
+    if (isAuthenticated) {
+      setSelectedProduct(product);
+      setOrderPanelOpen(true);
+    }
+  };
+
+  const handleCartClick = async (product) => {
+    const isAuthenticated = await checkAuthAndProceed('cart', product);
+    if (isAuthenticated) {
+      setSelectedProduct(product);
+      setCartPanelOpen(true);
+    }
   };
 
   const handleCloseOrder = () => {
@@ -44,9 +80,9 @@ export default function ProductCard() {
   const products = [
     {
       img: emoex,
-      title: "LOREM IPSUM",
+      title: "EMO-S AI ROBOT",
       desc: "Lorem Ipsum is simply dummy printing and typesetting industry",
-      price: "89",
+      price: "67",
       specs: {
         dimensions: "3.2 x 2.6 x 4.6 cm",
         weight: "100g",
@@ -58,9 +94,9 @@ export default function ProductCard() {
     },
     {
       img: emoex2,
-      title: "LOREM IPSUM",
+      title: "EMO AI PROTOTYPE",
       desc: "Lorem Ipsum is simply dummy printing and typesetting industry",
-      price: "89",
+      price: "40",
       specs: {
         dimensions: "3.2 x 2.6 x 4.6 cm",
         weight: "100g",
@@ -72,9 +108,9 @@ export default function ProductCard() {
     },
     {
       img: emoex3,
-      title: "LOREM IPSUM",
+      title: "EMO AI PRO",
       desc: "Lorem Ipsum is simply dummy printing and typesetting industry",
-      price: "89",
+      price: "95",
       specs: {
         dimensions: "3.2 x 2.6 x 4.6 cm",
         weight: "100g",
@@ -88,6 +124,13 @@ export default function ProductCard() {
 
   return (
     <main role="main" className="product-root">
+      {notification && (
+        <Notification 
+          message={notification.message} 
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       {products.map((product, index) => (
         <div key={index} className="product">
           <div className={`product-flip-container ${flipped[index] ? 'flipped' : ''}`}>

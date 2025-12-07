@@ -1,9 +1,14 @@
 import React, { useState } from "react";
+import Notification from "../../components/Notification";
 import "./orderPanel.scss";
 
 export default function OrderPanel({ product, onClose }) {
   const [quantity, setQuantity] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   const handleQuantityChange = (change) => {
     const newQuantity = quantity + change;
@@ -12,21 +17,90 @@ export default function OrderPanel({ product, onClose }) {
     }
   };
 
-  const handleOrder = () => {
-    // Handle order submission logic here
-    console.log({
-      product: product.title,
-      quantity,
-      paymentMethod,
-      total: product.price * quantity
-    });
-    onClose();
+  const handleOrder = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const orderData = {
+        items: [
+          {
+            productName: product.title,
+            productImage: product.img,
+            quantity: quantity,
+            price: product.price
+          }
+        ],
+        paymentMethod: paymentMethod,
+        shippingAddress: '' // You can add a form field for this later
+      };
+
+      const response = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(orderData)
+      });
+
+      // Check content type before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server error. Please make sure the server is running.');
+      }
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create order');
+      }
+
+      console.log('Order created:', result);
+      
+      setSuccess(true);
+      setTimeout(() => {
+        onClose();
+        // Optionally redirect to orders page
+        window.location.href = '/userdash';
+      }, 2000);
+
+    } catch (err) {
+      console.error('Order error:', err);
+      setError(err.message || 'Failed to place order');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const totalPrice = (product.price * quantity).toFixed(2);
 
+  if (success) {
+    return (
+      <>
+        <div className="order-overlay" onClick={onClose}></div>
+        <div className="order-panel">
+          <div className="order-success">
+            <div className="success-icon">✓</div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Redirecting to your dashboard...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
+      {notification && (
+        <Notification 
+          message={notification.message} 
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <div className="order-overlay" onClick={onClose}></div>
       <div className="order-panel">
         <button className="order-close" onClick={onClose}>×</button>
@@ -62,25 +136,45 @@ export default function OrderPanel({ product, onClose }) {
             <div className="order-section">
               <label className="order-label">Payment Method</label>
               <div className="payment-options">
-                <label className={`payment-option ${paymentMethod === 'cash' ? 'active' : ''}`}>
+                <label className={`payment-option ${paymentMethod === 'Cash on Delivery' ? 'active' : ''}`}>
                   <input 
                     type="radio" 
                     name="payment" 
-                    value="cash"
-                    checked={paymentMethod === 'cash'}
+                    value="Cash on Delivery"
+                    checked={paymentMethod === 'Cash on Delivery'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                   />
-                  <span>Cash</span>
+                  <span>Cash on Delivery</span>
                 </label>
-                <label className={`payment-option ${paymentMethod === 'card' ? 'active' : ''}`}>
+                <label className={`payment-option ${paymentMethod === 'Credit Card' ? 'active' : ''}`}>
                   <input 
                     type="radio" 
                     name="payment" 
-                    value="card"
-                    checked={paymentMethod === 'card'}
+                    value="Credit Card"
+                    checked={paymentMethod === 'Credit Card'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                   />
-                  <span>Card</span>
+                  <span>Credit Card</span>
+                </label>
+                <label className={`payment-option ${paymentMethod === 'GCash' ? 'active' : ''}`}>
+                  <input 
+                    type="radio" 
+                    name="payment" 
+                    value="GCash"
+                    checked={paymentMethod === 'GCash'}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  />
+                  <span>GCash</span>
+                </label>
+                <label className={`payment-option ${paymentMethod === 'PayPal' ? 'active' : ''}`}>
+                  <input 
+                    type="radio" 
+                    name="payment" 
+                    value="PayPal"
+                    checked={paymentMethod === 'PayPal'}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  />
+                  <span>PayPal</span>
                 </label>
               </div>
             </div>
@@ -94,14 +188,28 @@ export default function OrderPanel({ product, onClose }) {
                 <span>Quantity:</span>
                 <span>× {quantity}</span>
               </div>
+              <div className="summary-row">
+                <span>Shipping:</span>
+                <span>${(product.price * quantity >= 100) ? '0.00' : '10.00'}</span>
+              </div>
               <div className="summary-row total">
                 <span>Total:</span>
-                <span>${totalPrice}</span>
+                <span>${((product.price * quantity) + (product.price * quantity >= 100 ? 0 : 10)).toFixed(2)}</span>
               </div>
             </div>
 
-            <button className="order-submit-btn" onClick={handleOrder}>
-              Place Order
+            {error && (
+              <div className="order-error">
+                {error}
+              </div>
+            )}
+
+            <button 
+              className="order-submit-btn" 
+              onClick={handleOrder}
+              disabled={loading}
+            >
+              {loading ? 'Placing Order...' : 'Place Order'}
             </button>
           </div>
         </div>

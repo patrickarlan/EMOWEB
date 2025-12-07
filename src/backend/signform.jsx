@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Notification from "../components/Notification";
 import "../styles/signform.css";
 
 export default function SignForm() {
@@ -9,6 +10,7 @@ export default function SignForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [notification, setNotification] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,7 +35,7 @@ export default function SignForm() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: 'include', // allow HttpOnly cookie to be set
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ username, password, rememberMe: remember }),
             });
 
             const data = await response.json();
@@ -51,10 +53,16 @@ export default function SignForm() {
                 try { localStorage.removeItem("emo_username"); } catch (e) {}
             }
 
-            // Show success message
-            alert(`Welcome back, ${data.username}! Login successful.`);
-            // Redirect to user area
-            navigate('/userdash');
+            // Show success notification
+            setNotification({ 
+                message: `Welcome back, ${data.username}! Login successful.`, 
+                type: 'success' 
+            });
+            
+            // Redirect after showing notification
+            setTimeout(() => {
+                navigate('/userdash');
+            }, 1500);
             
             // Clear form
             setPassword("");
@@ -67,6 +75,13 @@ export default function SignForm() {
 
     return (
         <main className="signform-container flex flex-col min-h-screen items-center justify-center">
+            {notification && (
+                <Notification 
+                    message={notification.message} 
+                    type={notification.type}
+                    onClose={() => setNotification(null)}
+                />
+            )}
             <div className="signform">
                 <h2 className="subtext">SIGN IN</h2>
                 <img src="src/pics/emoweb.png" alt="EMOWEB Logo" className="signform-logo" />

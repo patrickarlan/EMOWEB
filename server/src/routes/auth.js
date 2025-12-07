@@ -35,7 +35,7 @@ router.post('/register', async (req, res) => {
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
-	const { username, password } = req.body || {};
+	const { username, password, rememberMe } = req.body || {};
 	if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
 
 	try {
@@ -47,14 +47,18 @@ router.post('/login', async (req, res) => {
 		if (!match) return res.status(401).json({ error: 'Invalid username or password' });
 
 		// Success - sign JWT and set as HttpOnly cookie
-		const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+		// If rememberMe is checked, token expires in 30 days, otherwise 7 days
+		const expiresIn = rememberMe ? '30d' : '7d';
+		const maxAge = rememberMe ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000;
+		
+		const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, JWT_SECRET, { expiresIn });
 
 		// set cookie (HttpOnly, secure in production)
 		res.cookie('token', token, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
 			sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+			maxAge,
 		});
 
 		return res.status(200).json({ id: user.id, username: user.username, email: user.email });
@@ -75,6 +79,41 @@ router.get('/me', requireAuth, async (req, res) => {
 	} catch (err) {
 		console.error('Me error', err);
 		return res.status(500).json({ error: 'Server error' });
+	}
+});
+
+// POST /api/auth/verify-password - verify user's current password
+router.post('/verify-password', requireAuth, async (req, res) => {
+	try {
+		const { password } = req.body || {};
+		const { id } = req.user || {};
+
+		if (!password) {
+			return res.status(400).json({ message: 'Password is required' });
+		}
+
+		if (!id) {
+			return res.status(401).json({ message: 'Not authenticated' });
+		}
+
+		// Fetch user's password hash
+		const [rows] = await pool.execute('SELECT password_hash FROM users WHERE id = ? LIMIT 1', [id]);
+		
+		if (!rows.length) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+
+		// Compare provided password with stored hash
+		const isValid = await bcrypt.compare(password, rows[0].password_hash);
+
+		if (!isValid) {
+			return res.status(401).json({ message: 'Incorrect password' });
+		}
+
+		return res.json({ verified: true, message: 'Password verified successfully' });
+	} catch (err) {
+		console.error('Password verification error:', err);
+		return res.status(500).json({ message: 'Server error' });
 	}
 });
 
