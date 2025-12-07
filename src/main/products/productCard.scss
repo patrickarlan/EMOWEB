@@ -108,25 +108,139 @@ main[role="main"] {
   transition: filter 0.3s ease, transform 0.3s ease, z-index 0s 0.3s;
   filter: blur(0px);
 
+  /* Flip container for 3D animation */
+  .product-flip-container {
+    position: relative;
+    width: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    
+    &.flipped {
+      transform: rotateY(180deg);
+    }
+  }
+
   /* Inner panel that will scale on hover without affecting sidebar */
   .product-panel{
     /* keep panel visually aligned with the product background */
-    background: transparent;
+    background: #fff;
     transition: transform .3s cubic-bezier(.2,.9,.2,1), box-shadow .3s ease;
     transform-origin: center center;
     will-change: transform, box-shadow;
-    /* ensure shadows don't get clipped */
     position: relative;
+    z-index: 2;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Front and back faces */
+  .product-front {
+    position: relative;
+    transform: rotateY(0deg);
     z-index: 2;
   }
 
+  .product-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: rotateY(180deg);
+    padding: 30px 20px;
+    box-sizing: border-box;
+    z-index: 1;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0s 0.4s, visibility 0s 0.4s;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Enable pointer events when flipped */
+  .product-flip-container.flipped .product-back {
+    pointer-events: auto;
+    z-index: 2;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0s 0s, visibility 0s 0s;
+  }
+
+  .product-flip-container.flipped .product-front {
+    z-index: 1;
+  }
+
+  /* Specs styling */
+  .product-specs {
+    padding: 10px 20px;
+    width: 100%;
+    
+    h2 {
+      font-size: 18px;
+      color: $dark-blue;
+      margin-bottom: 25px;
+      text-align: center;
+      border-bottom: 2px solid $green;
+      padding-bottom: 10px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      max-width: 260px;
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .spec-label {
+          font-weight: 600;
+          color: $dark-blue;
+          font-size: 0.85em;
+        }
+
+        .spec-value {
+          color: #666;
+          font-size: 0.85em;
+          text-align: right;
+        }
+      }
+    }
+  }
+
   /* Hover effect: larger scale for spacing + glowy shadow on the panel only */
-  &:hover {
+  &:hover:not(:has(.product-flip-container.flipped)) {
     z-index: 20;
     transition: filter 0.3s ease, transform 0.3s ease, z-index 0s 0s;
     
     .product-panel {
       transform: scale(1.08);
+      box-shadow: 0 8px 40px rgba(19, 141, 211, 0.5), 0 0 50px rgba(139,92,246,0.2);
+      transition: ease-in-out .3s;
+    }
+
+    .product-sidebar {
+      transform: scale(1.08);
+      box-shadow: 0 8px 40px rgba(19, 141, 211, 0.5), 0 0 50px rgba(139,92,246,0.2);
+      transition: ease-in-out .3s;
+    }
+  }
+
+  /* Hover effect when flipped to specs */
+  &:hover:has(.product-flip-container.flipped) {
+    z-index: 20;
+    transition: filter 0.3s ease, transform 0.3s ease, z-index 0s 0s;
+    
+    .product-flip-container {
+      transform: rotateY(180deg) scale(1.08);
       box-shadow: 0 8px 40px rgba(19, 141, 211, 0.5), 0 0 50px rgba(139,92,246,0.2);
       transition: ease-in-out .3s;
     }
