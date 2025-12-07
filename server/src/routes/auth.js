@@ -11,7 +11,7 @@ const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d';
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-	const { firstName, middleInitial, lastName, contactNumber, username, email, password } = req.body || {};
+	const { firstName, middleInitial, lastName, contactNumber, region, country, city, address, postalCode, username, email, password } = req.body || {};
 	if (!username || !email || !password) return res.status(400).json({ error: 'Missing required fields' });
 
 	try {
@@ -21,9 +21,9 @@ router.post('/register', async (req, res) => {
 
 		const passwordHash = await bcrypt.hash(password, 12);
 		const [result] = await pool.execute(
-			`INSERT INTO users (first_name, middle_initial, last_name, contact_number, username, email, password_hash)
-			 VALUES (?, ?, ?, ?, ?, ?, ?)`,
-			[firstName || null, middleInitial || null, lastName || null, contactNumber || null, username, email, passwordHash]
+			`INSERT INTO users (first_name, middle_initial, last_name, contact_number, region, country, city, street_address, postal_code, username, email, password_hash)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			[firstName || null, middleInitial || null, lastName || null, contactNumber || null, region || null, country || null, city || null, address || null, postalCode || null, username, email, passwordHash]
 		);
 
 		return res.status(201).json({ id: result.insertId });
@@ -69,7 +69,7 @@ router.get('/me', requireAuth, async (req, res) => {
 	try {
 		const { id } = req.user || {};
 		if (!id) return res.status(401).json({ error: 'Not authenticated' });
-		const [rows] = await pool.execute('SELECT id, first_name AS firstName, middle_initial AS middleInitial, last_name AS lastName, contact_number AS contactNumber, username, email, created_at AS createdAt FROM users WHERE id = ? LIMIT 1', [id]);
+		const [rows] = await pool.execute('SELECT id, first_name AS firstName, middle_initial AS middleInitial, last_name AS lastName, contact_number AS contactNumber, profile_picture AS profilePicture, username, email, created_at AS createdAt FROM users WHERE id = ? LIMIT 1', [id]);
 		if (!rows.length) return res.status(404).json({ error: 'User not found' });
 		return res.json(rows[0]);
 	} catch (err) {

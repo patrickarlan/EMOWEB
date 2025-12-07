@@ -81,7 +81,8 @@
 
 .regiform input,
 .regiform .usertextbox,
-.regiform .passtextbox{
+.regiform .passtextbox,
+.regiform select{
     width:100%;
     padding:12px 14px;
     border-radius:10px;
@@ -94,12 +95,29 @@
     max-width:420px;
     box-sizing:border-box;
 }
+
+.regiform select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.8)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.2em;
+    padding-right: 2.5rem;
+}
+
+.regiform select option {
+    background: #1a1a2e;
+    color: #fff;
+}
+
 .regiform input::placeholder,
 .regiform .usertextbox::placeholder,
 .regiform .passtextbox::placeholder{ color: rgba(255,255,255,0.62); }
 .regiform input:focus,
 .regiform .usertextbox:focus,
-.regiform .passtextbox:focus{ box-shadow: 0 8px 30px rgba(8,18,40,0.35); border-color: rgba(255,255,255,0.16); }
+.regiform .passtextbox:focus,
+.regiform select:focus{ box-shadow: 0 8px 30px rgba(8,18,40,0.35); border-color: rgba(255,255,255,0.16); }
 
 .regiform .submitbutton{
     width:100%;
@@ -180,4 +198,129 @@
 .regiform .register-inner {
     font-family: inherit;
     font-size: inherit;
+}
+
+/* React Select Styling for Regiform */
+.phone-input-wrapper-regiform {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+    margin: 10px 0;
+}
+
+.react-select-container-regiform {
+    width: 100%;
+    max-width: 420px;
+    margin: 10px 0;
+}
+
+.phone-input-wrapper-regiform .react-select-container-regiform {
+    flex: 0 0 160px;
+    min-width: 160px;
+    margin: 0;
+    font-size: 13px;
+}
+
+.phone-number-input-regiform {
+    flex: 1;
+    margin: 0 !important;
+}
+
+.regiform .react-select__control {
+    background: rgba(0, 0, 0, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    padding: 3px 6px;
+    min-height: 44px;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    transition: box-shadow 160ms ease, border-color 140ms ease;
+}
+
+.regiform .react-select__control:hover {
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.regiform .react-select__control--is-focused {
+    box-shadow: 0 8px 30px rgba(8, 18, 40, 0.35) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.regiform .react-select__value-container {
+    padding: 0 8px;
+}
+
+.regiform .react-select__single-value {
+    color: #ffffff !important;
+}
+
+.regiform .react-select__placeholder {
+    color: rgba(255, 255, 255, 0.62) !important;
+    text-align: left !important;
+}
+
+.regiform .react-select__input-container,
+.regiform .react-select__input {
+    color: #ffffff !important;
+    margin: 0;
+    padding: 0;
+}
+
+.regiform .react-select__indicator-separator {
+    display: none;
+}
+
+.regiform .react-select__dropdown-indicator {
+    color: rgba(255, 255, 255, 0.8) !important;
+    padding: 8px;
+}
+
+.regiform .react-select__dropdown-indicator:hover {
+    color: rgba(255, 255, 255, 1) !important;
+}
+
+.regiform .react-select__clear-indicator {
+    color: rgba(255, 255, 255, 0.6) !important;
+    padding: 8px;
+}
+
+.regiform .react-select__clear-indicator:hover {
+    color: rgba(255, 255, 255, 1) !important;
+}
+
+.regiform .react-select__menu {
+    background: rgba(31, 47, 71, 0.98) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+    margin-top: 4px;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.regiform .react-select__menu-list {
+    padding: 4px;
+}
+
+.regiform .react-select__option {
+    background: transparent !important;
+    color: #ffffff !important;
+    padding: 10px 12px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: background 150ms ease;
+}
+
+.regiform .react-select__option:hover {
+    background: rgba(74, 158, 255, 0.4) !important;
+}
+
+.regiform .react-select__option--is-focused {
+    background: rgba(74, 158, 255, 0.3) !important;
+}
+
+.regiform .react-select__option--is-selected {
+    background: rgba(74, 158, 255, 0.5) !important;
+    font-weight: 600;
 }

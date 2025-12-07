@@ -6,7 +6,10 @@ import "../styles/header.css";
 
 export default function Header() {
   const [isSticky, setIsSticky] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const headerRef = useRef(null);
+  
   useEffect(() => {
     const headerEl = headerRef.current;
     if (!headerEl) return;
@@ -24,6 +27,32 @@ export default function Header() {
 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Fetch user data on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user || data);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const avatarLetter = user?.username ? user.username.charAt(0).toUpperCase() : 'U';
+  const profilePicture = user?.profilePicture ? `http://localhost:4000${user.profilePicture}` : null;
+
   return (
     <header ref={headerRef} className={"site-header backdrop-blur-sm" + (isSticky ? " sticky" : "")}>
       
@@ -55,11 +84,22 @@ export default function Header() {
             <circle cx="18" cy="20" r="1" />
           </svg>
         </Link>
-        <Link to="/signform" className="profile-button" aria-label="User profile">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-          </svg>
-        </Link>
+        
+        {user ? (
+          <Link to="/userdash" className="profile-button profile-button-logged" aria-label="User profile">
+            {profilePicture ? (
+              <img src={profilePicture} alt="Profile" className="profile-button-img" />
+            ) : (
+              <span className="profile-button-letter">{avatarLetter}</span>
+            )}
+          </Link>
+        ) : (
+          <Link to="/signform" className="profile-button" aria-label="User profile">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </Link>
+        )}
       </div>
     </header>
   );

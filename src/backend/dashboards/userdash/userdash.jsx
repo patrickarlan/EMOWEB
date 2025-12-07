@@ -1,5 +1,6 @@
 import React from "react";
 import USSidebar from "./USsidebar";
+import ProfileSettings from "./components/ProfileSettings";
 import "../userdash/userdash.css";
 
 export default function UserDash() {
@@ -31,8 +32,7 @@ export default function UserDash() {
                     {/* Detail panel placed as a grid child so it lines up with the fourth column on wide screens */}
                     <section className="dash-detail" aria-label="Detail panel">
                         <div className="dash-detail-inner">
-                            <h3 className="dd-title">Details</h3>
-                            <p className="dd-desc">Select a panel above to view more details here. This area will expand with the relevant content when you click any of the dashboard boxes (orders, profile, settings, activity).</p>
+                            <ProfileSettings />
                         </div>
                     </section>
                 </section>

@@ -80,6 +80,7 @@ export default function USSidebar() {
   }
 
   const avatarLetter = user && user.username ? user.username.charAt(0).toUpperCase() : 'U';
+  const profilePicture = user?.profilePicture ? `http://localhost:4000${user.profilePicture}` : null;
 
   return (
     <>
@@ -88,7 +89,11 @@ export default function USSidebar() {
       <div className="us-content">
         <div className="us-sidebar-top">
         <div className="us-avatar" aria-hidden>
-          <span>{loading ? '…' : avatarLetter}</span>
+          {profilePicture ? (
+            <img src={profilePicture} alt="Profile" className="us-avatar-img" />
+          ) : (
+            <span>{loading ? '…' : avatarLetter}</span>
+          )}
         </div>
         <div className="us-userinfo">
           <div className="us-username">{loading ? 'Loading…' : (user?.username || 'Guest')}</div>
