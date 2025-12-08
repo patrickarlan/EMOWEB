@@ -77,7 +77,7 @@ export default function Header() {
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </button>
-        <Link to="/product" className="cart-button" aria-label="Cart">
+        <Link to="/products" className="cart-button" aria-label="Cart">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M6 6h15l-1.5 9h-12z" />
             <circle cx="9" cy="20" r="1" />

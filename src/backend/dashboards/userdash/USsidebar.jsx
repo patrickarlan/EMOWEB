@@ -107,7 +107,7 @@ export default function USSidebar({ activePanel, setActivePanel }) {
             <li className="us-nav-divider" aria-hidden />
             <li className="us-nav-item"><Link to="/" className="us-nav-link">Home</Link></li>
             <li className="us-nav-item"><Link to="/about" className="us-nav-link">About Us</Link></li>
-            <li className="us-nav-item"><Link to="/product" className="us-nav-link">Products</Link></li>
+            <li className="us-nav-item"><Link to="/products" className="us-nav-link">Products</Link></li>
             <li className="us-nav-item"><Link to="/contact" className="us-nav-link">Contact Us</Link></li>
             <li className="us-nav-divider" aria-hidden />
             <li className="us-nav-item">

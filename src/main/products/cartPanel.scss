@@ -30,7 +30,7 @@ $yellow: #f4c542;
   width: 90%;
   max-height: 90vh;
   overflow: hidden;
-  animation: slideUp 0.3s ease;
+  animation: scaleIn 0.3s ease;
 
   .cart-close {
     position: absolute;
@@ -221,14 +221,14 @@ $yellow: #f4c542;
   }
 }
 
-@keyframes slideUp {
+@keyframes scaleIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -40%);
+    transform: translate(-50%, -50%) scale(0.7);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

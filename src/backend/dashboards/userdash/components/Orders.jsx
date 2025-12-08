@@ -1,10 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import './styles/Orders.css';
+import Notification from '../../../../components/Notification';
 
-export default function Orders() {
+export default function Orders({ onOrderCancelled }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const [customReason, setCustomReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+  const [notification, setNotification] = useState(null);
+
+  const cancelReasons = [
+    'Changed my mind',
+    'Found a better price elsewhere',
+    'Ordered by mistake',
+    'Delivery time too long',
+    'Product not needed anymore',
+    'Other (please specify)'
+  ];
 
   useEffect(() => {
     fetchOrders();
@@ -28,6 +44,64 @@ export default function Orders() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCancelClick = (order) => {
+    setSelectedOrder(order);
+    setCancelReason('');
+    setCustomReason('');
+    setShowCancelModal(true);
+  };
+
+  const handleCancelOrder = async () => {
+    if (!cancelReason) {
+      setNotification({ message: 'Please select a reason for cancellation', type: 'error' });
+      return;
+    }
+
+    if (cancelReason === 'Other (please specify)' && !customReason.trim()) {
+      setNotification({ message: 'Please specify your reason', type: 'error' });
+      return;
+    }
+
+    try {
+      setCancelling(true);
+      const finalReason = cancelReason === 'Other (please specify)' ? customReason : cancelReason;
+
+      const response = await fetch(`/api/orders/${selectedOrder.id}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ reason: finalReason })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to cancel order');
+      }
+
+      setNotification({ message: 'Order cancelled successfully', type: 'success' });
+      setShowCancelModal(false);
+      fetchOrders(); // Refresh orders
+      
+      // Switch to cancelled orders tab after a short delay
+      if (onOrderCancelled) {
+        setTimeout(() => {
+          onOrderCancelled();
+        }, 1500);
+      }
+    } catch (err) {
+      setNotification({ message: err.message, type: 'error' });
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const canCancelOrder = (status) => {
+    return ['pending', 'processing'].includes(status);
   };
 
   const getStatusColor = (status) => {
@@ -172,9 +246,87 @@ export default function Orders() {
                 </div>
               </div>
             </div>
+
+            {canCancelOrder(order.status) && (
+              <div className="order-actions">
+                <button 
+                  className="cancel-order-btn"
+                  onClick={() => handleCancelClick(order)}
+                >
+                  Cancel Order
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
+
+      {showCancelModal && (
+        <div className="cancel-modal-overlay" onClick={() => setShowCancelModal(false)}>
+          <div className="cancel-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="cancel-modal-close" onClick={() => setShowCancelModal(false)}>
+              ×
+            </button>
+            
+            <h3 className="cancel-modal-title">Cancel Order</h3>
+            <p className="cancel-modal-subtitle">Order #{selectedOrder?.order_number}</p>
+            
+            <div className="cancel-reason-section">
+              <label className="cancel-reason-label">Please tell us why you're cancelling:</label>
+              
+              <div className="cancel-reasons-list">
+                {cancelReasons.map((reason) => (
+                  <label key={reason} className="cancel-reason-option">
+                    <input
+                      type="radio"
+                      name="cancelReason"
+                      value={reason}
+                      checked={cancelReason === reason}
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <span>{reason}</span>
+                  </label>
+                ))}
+              </div>
+
+              {cancelReason === 'Other (please specify)' && (
+                <textarea
+                  className="cancel-custom-reason"
+                  placeholder="Please specify your reason..."
+                  value={customReason}
+                  onChange={(e) => setCustomReason(e.target.value)}
+                  rows="3"
+                />
+              )}
+            </div>
+
+            <div className="cancel-modal-actions">
+              <button 
+                className="cancel-modal-btn cancel-modal-btn-secondary"
+                onClick={() => setShowCancelModal(false)}
+                disabled={cancelling}
+              >
+                Keep Order
+              </button>
+              <button 
+                className="cancel-modal-btn cancel-modal-btn-danger"
+                onClick={handleCancelOrder}
+                disabled={cancelling || !cancelReason}
+              >
+                {cancelling ? 'Cancelling...' : 'Cancel Order'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 }

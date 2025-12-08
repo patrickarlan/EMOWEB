@@ -3,12 +3,14 @@ import USSidebar from "./USsidebar";
 import ProfileSettings from "./components/ProfileSettings";
 import AccountSettings from "./components/AccountSettings";
 import Orders from "./components/Orders";
+import CancelledOrders from "./components/CancelledOrders";
 import Cart from "./components/Cart";
 import PasswordVerification from "../../../components/PasswordVerification";
 import "../userdash/userdash.css";
 
 export default function UserDash() {
     const [activePanel, setActivePanel] = useState("orders");
+    const [showCancelledOrders, setShowCancelledOrders] = useState(false);
     const [verificationOpen, setVerificationOpen] = useState(false);
     const [pendingPanel, setPendingPanel] = useState(null);
     const [verifiedSections, setVerifiedSections] = useState(new Set());
@@ -87,7 +89,25 @@ export default function UserDash() {
                     <section className="dash-detail" aria-label="Detail panel">
                         <div className="dash-detail-inner">
                             {activePanel === "profile" && <ProfileSettings />}
-                            {activePanel === "orders" && <Orders />}
+                            {activePanel === "orders" && (
+                                <>
+                                    <div className="orders-toggle">
+                                        <button 
+                                            className={`toggle-btn ${!showCancelledOrders ? 'active' : ''}`}
+                                            onClick={() => setShowCancelledOrders(false)}
+                                        >
+                                            Active Orders
+                                        </button>
+                                        <button 
+                                            className={`toggle-btn ${showCancelledOrders ? 'active' : ''}`}
+                                            onClick={() => setShowCancelledOrders(true)}
+                                        >
+                                            Cancelled Orders
+                                        </button>
+                                    </div>
+                                    {showCancelledOrders ? <CancelledOrders /> : <Orders onOrderCancelled={() => setShowCancelledOrders(true)} />}
+                                </>
+                            )}
                             {activePanel === "cart" && <Cart />}
                             {activePanel === "settings" && <AccountSettings />}
                         </div>

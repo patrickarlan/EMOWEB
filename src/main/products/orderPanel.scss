@@ -31,7 +31,7 @@ $primary-blue: #4a9eff;
   width: 90%;
   max-height: 90vh;
   overflow: hidden;
-  animation: slideUp 0.3s ease;
+  animation: scaleIn 0.3s ease;
 
   .order-close {
     position: absolute;
@@ -312,22 +312,22 @@ $primary-blue: #4a9eff;
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translate(-50%, -40%);
+    transform: translateX(-50%) translateY(calc(-50% + 100px));
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%) translateY(-50%);
   }
 }
 
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.5);
+    transform: translate(-50%, -50%) scale(0.7);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

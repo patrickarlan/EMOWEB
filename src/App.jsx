@@ -32,7 +32,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
-          <Route path="/product" element={<Product />} />
+          <Route path="/products" element={<Product />} />
           <Route path="/signform" element={<ProtectedRoute><SignForm /></ProtectedRoute>} />
           <Route path="/register" element={<Regiform />} />
 
