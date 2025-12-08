@@ -7,8 +7,16 @@ const router = express.Router();
 // GET /api/profile - Get current user's profile
 router.get('/', requireAuth, async (req, res) => {
 	try {
-		const { id } = req.user || {};
+		const { id, isSuperAdmin } = req.user || {};
 		if (!id) return res.status(401).json({ error: 'Not authenticated' });
+
+		// Super admin cannot edit profile (not in database)
+		if (isSuperAdmin && id === 'super-admin') {
+			return res.status(403).json({ 
+				error: 'Super admin accounts cannot be edited',
+				message: 'Super admin is a protected system account and cannot be modified through the profile page.'
+			});
+		}
 
 		const [rows] = await pool.execute(
 			`SELECT 
@@ -44,8 +52,16 @@ router.get('/', requireAuth, async (req, res) => {
 // PUT /api/profile - Update current user's profile
 router.put('/', requireAuth, async (req, res) => {
 	try {
-		const { id } = req.user || {};
+		const { id, isSuperAdmin } = req.user || {};
 		if (!id) return res.status(401).json({ error: 'Not authenticated' });
+
+		// Super admin cannot edit profile (not in database)
+		if (isSuperAdmin && id === 'super-admin') {
+			return res.status(403).json({ 
+				error: 'Super admin accounts cannot be edited',
+				message: 'Super admin is a protected system account and cannot be modified.'
+			});
+		}
 
 		const {
 			firstName,

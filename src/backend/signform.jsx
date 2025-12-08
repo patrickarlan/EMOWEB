@@ -53,15 +53,22 @@ export default function SignForm() {
                 try { localStorage.removeItem("emo_username"); } catch (e) {}
             }
 
+            // Check if user is admin or super admin
+            const isAdmin = data.role === 'admin' || data.role === 'super_admin' || data.isSuperAdmin;
+            const redirectPath = isAdmin ? '/admindash' : '/userdash';
+            const welcomeMessage = isAdmin
+                ? `Welcome back, Administrator! Access granted.` 
+                : `Welcome back, ${data.username}! Login successful.`;
+            
             // Show success notification
             setNotification({ 
-                message: `Welcome back, ${data.username}! Login successful.`, 
+                message: welcomeMessage, 
                 type: 'success' 
             });
             
             // Redirect after showing notification
             setTimeout(() => {
-                navigate('/userdash');
+                navigate(redirectPath);
             }, 1500);
             
             // Clear form

@@ -15,6 +15,7 @@ import SignForm from "./backend/signform";
 import ProtectedRoute from "./backend/utilities/ProtectedRoute";
 import Regiform from "./backend/regiform";
 import UserDash from "./backend/dashboards/userdash/userdash";
+import AdminDash from "./backend/dashboards/admindash/admindash";
 import RequireAuth from "./backend/utilities/RequireAuth";
 
 
@@ -41,6 +42,7 @@ export default function App() {
         {/* User area uses UserLayout (no header/footer) */}
         <Route element={<UserLayout />}>
           <Route path="/userdash" element={<RequireAuth><UserDash /></RequireAuth>} />
+          <Route path="/admindash" element={<RequireAuth><AdminDash /></RequireAuth>} />
         </Route>
       </Routes>
     </ErrorBoundary>

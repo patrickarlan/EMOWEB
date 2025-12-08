@@ -8,8 +8,16 @@ const router = express.Router();
 // PUT /api/account/change-password - Change user password
 router.put('/change-password', requireAuth, async (req, res) => {
 	try {
-		const { id } = req.user || {};
+		const { id, isSuperAdmin } = req.user || {};
 		if (!id) return res.status(401).json({ error: 'Not authenticated' });
+
+		// Super admin cannot change password through this endpoint
+		if (isSuperAdmin && id === 'super-admin') {
+			return res.status(403).json({ 
+				error: 'Super admin password cannot be changed',
+				message: 'Super admin password must be changed in the .env file on the server.'
+			});
+		}
 
 		const { oldPassword, newPassword } = req.body;
 
@@ -56,8 +64,16 @@ router.put('/change-password', requireAuth, async (req, res) => {
 // POST /api/account/deactivate - Deactivate user account temporarily
 router.post('/deactivate', requireAuth, async (req, res) => {
 	try {
-		const { id } = req.user || {};
+		const { id, isSuperAdmin } = req.user || {};
 		if (!id) return res.status(401).json({ error: 'Not authenticated' });
+
+		// Super admin cannot be deactivated
+		if (isSuperAdmin && id === 'super-admin') {
+			return res.status(403).json({ 
+				error: 'Super admin account cannot be deactivated',
+				message: 'Super admin is a protected system account.'
+			});
+		}
 
 		const { days } = req.body;
 

@@ -413,8 +413,26 @@ main[role="main"] {
   }
 }
 
+
 .product-root .product {
   margin: 0; /* reset any margins so centering is exact */
+  transition: all 0.3s ease;
+}
+
+/* Highlight effect when navigating from search */
+.product.highlight-product {
+  animation: highlightPulse 2s ease;
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(74, 222, 255, 0);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(74, 222, 255, 0.6);
+  }
 }
 
 @media (max-height: 700px) {
@@ -430,5 +448,7 @@ main[role="main"] {
     bottom: -50px;
   }
 }
+
+
 
 
