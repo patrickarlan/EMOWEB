@@ -284,6 +284,10 @@ main[role="main"] {
       font-size: 3.5em;
       position: relative;
       margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 0.9;
 
       &::before {
         content: '$';
@@ -291,6 +295,18 @@ main[role="main"] {
         top: 0;
         left: -10px;
         font-size: 0.35em;
+      }
+
+      // Responsive font size based on price length
+      &[data-length="3"] {
+        font-size: 2.5em;
+      }
+      &[data-length="4"] {
+        font-size: 2em;
+      }
+      &[data-length="5"],
+      &[data-length="6"] {
+        font-size: 1.6em;
       }
     }
   }

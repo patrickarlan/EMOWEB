@@ -183,6 +183,56 @@ router.post('/verify-password', requireAuth, async (req, res) => {
 	}
 });
 
+// PUT /api/auth/change-password - change user password
+router.put('/change-password', requireAuth, async (req, res) => {
+	try {
+		const { currentPassword, newPassword } = req.body || {};
+		const { id, isSuperAdmin } = req.user || {};
+
+		if (!currentPassword || !newPassword) {
+			return res.status(400).json({ error: 'Current password and new password are required' });
+		}
+
+		if (newPassword.length < 6) {
+			return res.status(400).json({ error: 'New password must be at least 6 characters' });
+		}
+
+		if (!id) {
+			return res.status(401).json({ error: 'Not authenticated' });
+		}
+
+		// Super admin cannot change password through this endpoint
+		if (isSuperAdmin && id === 'super-admin') {
+			return res.status(403).json({ error: 'Super admin password must be changed in environment variables' });
+		}
+
+		// Fetch user's current password hash
+		const [rows] = await pool.execute('SELECT password_hash FROM users WHERE id = ? LIMIT 1', [id]);
+		
+		if (!rows.length) {
+			return res.status(404).json({ error: 'User not found' });
+		}
+
+		// Verify current password
+		const isValid = await bcrypt.compare(currentPassword, rows[0].password_hash);
+
+		if (!isValid) {
+			return res.status(401).json({ error: 'Current password is incorrect' });
+		}
+
+		// Hash new password
+		const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+		// Update password in database
+		await pool.execute('UPDATE users SET password_hash = ? WHERE id = ?', [newPasswordHash, id]);
+
+		return res.json({ message: 'Password changed successfully' });
+	} catch (err) {
+		console.error('Change password error:', err);
+		return res.status(500).json({ error: 'Server error' });
+	}
+});
+
 // POST /api/auth/logout - clears auth cookie
 router.post('/logout', (req, res) => {
 	res.clearCookie('token', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax' });

@@ -14,34 +14,70 @@ export default function Header() {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [showDashboardMenu, setShowDashboardMenu] = useState(false);
   const headerRef = useRef(null);
   const searchInputRef = useRef(null);
   const searchContainerRef = useRef(null);
+  const dashboardMenuRef = useRef(null);
   const navigate = useNavigate();
 
-  const products = [
-    {
-      id: 'emo-s',
-      img: emoex,
-      title: 'EMO-S AI ROBOT',
-      desc: 'Lorem Ipsum is simply dummy printing and typesetting industry',
-      price: '67'
-    },
-    {
-      id: 'emo-prototype',
-      img: emoex2,
-      title: 'EMO AI PROTOTYPE',
-      desc: 'Lorem Ipsum is simply dummy printing and typesetting industry',
-      price: '40'
-    },
-    {
-      id: 'emo-pro',
-      img: emoex3,
-      title: 'EMO AI PRO',
-      desc: 'Lorem Ipsum is simply dummy printing and typesetting industry',
-      price: '95'
-    }
-  ];
+  const productImages = {
+    "EMO-S AI ROBOT": emoex,
+    "EMO AI PROTOTYPE": emoex2,
+    "EMO AI PRO": emoex3
+  };
+
+  // Fetch products from database
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          const mappedProducts = data.map(product => ({
+            id: product.id,
+            img: productImages[product.product_name] || emoex,
+            title: product.product_name,
+            desc: product.description,
+            price: product.price
+          }));
+          setProducts(mappedProducts);
+          setFilteredProducts(mappedProducts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+        // Fallback to default products if fetch fails
+        const defaultProducts = [
+          {
+            id: 'emo-s',
+            img: emoex,
+            title: 'EMO-S AI ROBOT',
+            desc: 'Lorem Ipsum is simply dummy printing and typesetting industry',
+            price: '67'
+          },
+          {
+            id: 'emo-prototype',
+            img: emoex2,
+            title: 'EMO AI PROTOTYPE',
+            desc: 'Lorem Ipsum is simply dummy printing and typesetting industry',
+            price: '40'
+          },
+          {
+            id: 'emo-pro',
+            img: emoex3,
+            title: 'EMO AI PRO',
+            desc: 'Lorem Ipsum is simply dummy printing and typesetting industry',
+            price: '95'
+          }
+        ];
+        setProducts(defaultProducts);
+        setFilteredProducts(defaultProducts);
+      }
+    };
+
+    fetchProducts();
+  }, []);
   
   useEffect(() => {
     const headerEl = headerRef.current;
@@ -137,11 +173,17 @@ export default function Header() {
       if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
         setShowSearchDropdown(false);
       }
+      if (dashboardMenuRef.current && !dashboardMenuRef.current.contains(e.target)) {
+        setShowDashboardMenu(false);
+      }
     };
 
     const handleEscape = (e) => {
       if (e.key === 'Escape' && showSearchDropdown) {
         setShowSearchDropdown(false);
+      }
+      if (e.key === 'Escape' && showDashboardMenu) {
+        setShowDashboardMenu(false);
       }
     };
 
@@ -151,11 +193,7 @@ export default function Header() {
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('keydown', handleEscape);
     };
-  }, [showSearchDropdown]);
-
-  useEffect(() => {
-    setFilteredProducts(products);
-  }, []);
+  }, [showSearchDropdown, showDashboardMenu]);
 
   return (
     <header ref={headerRef} className={"site-header backdrop-blur-sm" + (isSticky ? " sticky" : "")}>
@@ -251,13 +289,45 @@ export default function Header() {
         </Link>
         
         {user ? (
-          <Link to="/userdash" className="profile-button profile-button-logged" aria-label="User profile">
-            {profilePicture ? (
-              <img src={profilePicture} alt="Profile" className="profile-button-img" />
-            ) : (
-              <span className="profile-button-letter">{avatarLetter}</span>
-            )}
-          </Link>
+          user.role === 'admin' && !user.isSuperAdmin ? (
+            <div className="dashboard-menu-container" ref={dashboardMenuRef}>
+              <button 
+                className="profile-button profile-button-logged" 
+                aria-label="User profile"
+                onClick={() => setShowDashboardMenu(!showDashboardMenu)}
+              >
+                {profilePicture ? (
+                  <img src={profilePicture} alt="Profile" className="profile-button-img" />
+                ) : (
+                  <span className="profile-button-letter">{avatarLetter}</span>
+                )}
+              </button>
+              {showDashboardMenu && (
+                <div className="dashboard-dropdown">
+                  <Link to="/userdash" className="dashboard-option">
+                    <i className="fas fa-user"></i>
+                    <span>User Dashboard</span>
+                  </Link>
+                  <Link to="/admindash" className="dashboard-option">
+                    <i className="fas fa-user-shield"></i>
+                    <span>Admin Dashboard</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link 
+              to={user.isSuperAdmin || user.role === 'super_admin' ? '/admindash' : '/userdash'} 
+              className="profile-button profile-button-logged" 
+              aria-label="User profile"
+            >
+              {profilePicture ? (
+                <img src={profilePicture} alt="Profile" className="profile-button-img" />
+              ) : (
+                <span className="profile-button-letter">{avatarLetter}</span>
+              )}
+            </Link>
+          )
         ) : (
           <Link to="/signform" className="profile-button" aria-label="User profile">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

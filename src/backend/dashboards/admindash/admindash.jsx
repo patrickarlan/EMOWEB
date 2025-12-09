@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ADSidebar from "./ADsidebar";
 import AccountSettings from "./components/AccountSettings";
+import ProductSettings from "./components/ProductSettings";
+import AdminProfileSettings from "./components/AdminProfileSettings";
 import "./admindash.css";
 
 export default function AdminDash() {
@@ -20,7 +22,7 @@ export default function AdminDash() {
                         className={`dash-box ${activePanel === "products" ? "active" : ""}`}
                         onClick={() => handlePanelClick("products")}
                     >
-                        <h2 className="dash-title">Product M</h2>
+                        <h2 className="dash-title">Product Management</h2>
                         <p className="dash-desc">Manage product inventory and details.</p>
                     </article>
 
@@ -28,7 +30,7 @@ export default function AdminDash() {
                         className={`dash-box ${activePanel === "accounts" ? "active" : ""}`}
                         onClick={() => handlePanelClick("accounts")}
                     >
-                        <h2 className="dash-title">Account S</h2>
+                        <h2 className="dash-title">Account Settings</h2>
                         <p className="dash-desc">Manage user accounts and settings.</p>
                     </article>
 
@@ -36,7 +38,7 @@ export default function AdminDash() {
                         className={`dash-box ${activePanel === "system" ? "active" : ""}`}
                         onClick={() => handlePanelClick("system")}
                     >
-                        <h2 className="dash-title">System M</h2>
+                        <h2 className="dash-title">System Management</h2>
                         <p className="dash-desc">Prototype and system management.</p>
                     </article>
 
@@ -44,7 +46,7 @@ export default function AdminDash() {
                         className={`dash-box ${activePanel === "admin" ? "active" : ""}`}
                         onClick={() => handlePanelClick("admin")}
                     >
-                        <h2 className="dash-title">Admin</h2>
+                        <h2 className="dash-title">Admin Settings</h2>
                         <p className="dash-desc">Admin settings and configurations.</p>
                     </article>
 
@@ -52,10 +54,7 @@ export default function AdminDash() {
                     <section className="dash-detail" aria-label="Detail panel">
                         <div className="dash-detail-inner">
                             {activePanel === "products" && (
-                                <div className="detail-content">
-                                    <h3>Product Management</h3>
-                                    <p>Product management content will appear here.</p>
-                                </div>
+                                <ProductSettings />
                             )}
                             {activePanel === "accounts" && (
                                 <AccountSettings />
@@ -67,10 +66,7 @@ export default function AdminDash() {
                                 </div>
                             )}
                             {activePanel === "admin" && (
-                                <div className="detail-content">
-                                    <h3>Admin Settings</h3>
-                                    <p>Admin settings content will appear here.</p>
-                                </div>
+                                <AdminProfileSettings />
                             )}
                         </div>
                     </section>

@@ -562,6 +562,26 @@ export default function AccountSettings() {
                                         />
                                     </div>
                                 </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>New Password (leave blank to keep current)</label>
+                                        <div className="password-input-wrapper">
+                                            <input 
+                                                type={showPassword ? "text" : "password"}
+                                                value={formData.newPassword || ''} 
+                                                onChange={(e) => handleFormChange('newPassword', e.target.value)}
+                                                placeholder="Enter new password"
+                                            />
+                                            <button 
+                                                type="button"
+                                                className="password-toggle"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                <i className={`fas fa-eye${showPassword ? '-slash' : ''}`}></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Contact Information Section */}

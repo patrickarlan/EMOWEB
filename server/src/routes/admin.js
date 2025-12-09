@@ -251,7 +251,8 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
             city,
             address,
             postalCode,
-            role
+            role,
+            newPassword
         } = req.body;
 
         // Validate role
@@ -299,40 +300,84 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
             }
         }
 
-        // Update user
-        await db.query(
-            `UPDATE users 
-            SET first_name = ?, 
-                middle_initial = ?, 
-                last_name = ?, 
-                username = ?, 
-                email = ?, 
-                contact_number = ?,
-                country_code = ?,
-                region = ?,
-                country = ?,
-                city = ?,
-                street_address = ?,
-                postal_code = ?,
-                role = ?
-            WHERE id = ?`,
-            [
-                firstName,
-                middleInitial || null,
-                lastName,
-                username,
-                email,
-                contactNumber,
-                countryCode || null,
-                region || null,
-                country || null,
-                city || null,
-                address || null,
-                postalCode || null,
-                role,
-                id
-            ]
-        );
+        // Hash password if provided
+        let hashedPassword = null;
+        if (newPassword && newPassword.trim() !== '') {
+            hashedPassword = await bcrypt.hash(newPassword, 10);
+        }
+
+        // Update user - conditionally update password
+        if (hashedPassword) {
+            await db.query(
+                `UPDATE users 
+                SET first_name = ?, 
+                    middle_initial = ?, 
+                    last_name = ?, 
+                    username = ?, 
+                    email = ?, 
+                    contact_number = ?,
+                    country_code = ?,
+                    region = ?,
+                    country = ?,
+                    city = ?,
+                    street_address = ?,
+                    postal_code = ?,
+                    role = ?,
+                    password_hash = ?
+                WHERE id = ?`,
+                [
+                    firstName,
+                    middleInitial || null,
+                    lastName,
+                    username,
+                    email,
+                    contactNumber,
+                    countryCode || null,
+                    region || null,
+                    country || null,
+                    city || null,
+                    address || null,
+                    postalCode || null,
+                    role,
+                    hashedPassword,
+                    id
+                ]
+            );
+        } else {
+            await db.query(
+                `UPDATE users 
+                SET first_name = ?, 
+                    middle_initial = ?, 
+                    last_name = ?, 
+                    username = ?, 
+                    email = ?, 
+                    contact_number = ?,
+                    country_code = ?,
+                    region = ?,
+                    country = ?,
+                    city = ?,
+                    street_address = ?,
+                    postal_code = ?,
+                    role = ?
+                WHERE id = ?`,
+                [
+                    firstName,
+                    middleInitial || null,
+                    lastName,
+                    username,
+                    email,
+                    contactNumber,
+                    countryCode || null,
+                    region || null,
+                    country || null,
+                    city || null,
+                    address || null,
+                    postalCode || null,
+                    role,
+                    id
+                ]
+            );
+        }
 
         // Fetch updated user
         const [updatedUser] = await db.query(
@@ -496,6 +541,272 @@ router.put('/users/:id/status', requireAdmin, async (req, res) => {
             success: false,
             message: 'Failed to toggle user status'
         });
+    }
+});
+
+// ==================== PRODUCT MANAGEMENT ROUTES ====================
+
+// Get all products
+router.get('/products', requireAdmin, async (req, res) => {
+    try {
+        const [products] = await db.query(
+            'SELECT * FROM products ORDER BY created_at DESC'
+        );
+        res.json(products);
+    } catch (error) {
+        console.error('Get products error:', error);
+        res.status(500).json({ error: 'Failed to fetch products' });
+    }
+});
+
+// Get single product
+router.get('/products/:id', requireAdmin, async (req, res) => {
+    try {
+        const [products] = await db.query(
+            'SELECT * FROM products WHERE id = ?',
+            [req.params.id]
+        );
+
+        if (products.length === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        res.json(products[0]);
+    } catch (error) {
+        console.error('Get product error:', error);
+        res.status(500).json({ error: 'Failed to fetch product' });
+    }
+});
+
+// Update product
+router.put('/products/:id', requireAdmin, async (req, res) => {
+    const { product_name, description, price, stock_quantity, is_active } = req.body;
+
+    try {
+        const [result] = await db.query(
+            `UPDATE products 
+             SET product_name = ?, description = ?, price = ?, stock_quantity = ?, is_active = ?
+             WHERE id = ?`,
+            [product_name, description, price, stock_quantity, is_active, req.params.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        res.json({ message: 'Product updated successfully' });
+    } catch (error) {
+        console.error('Update product error:', error);
+        res.status(500).json({ error: 'Failed to update product' });
+    }
+});
+
+// Toggle product active status
+router.patch('/products/:id/toggle-active', requireAdmin, async (req, res) => {
+    const { is_active } = req.body;
+
+    try {
+        const [result] = await db.query(
+            'UPDATE products SET is_active = ? WHERE id = ?',
+            [is_active, req.params.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        res.json({ message: 'Product status updated successfully' });
+    } catch (error) {
+        console.error('Toggle product error:', error);
+        res.status(500).json({ error: 'Failed to update product status' });
+    }
+});
+
+// Soft delete product (move to deleted_products table)
+router.delete('/products/:id', requireAdmin, async (req, res) => {
+    const connection = await db.getConnection();
+    
+    try {
+        await connection.beginTransaction();
+
+        // Get product details
+        const [products] = await connection.query(
+            'SELECT * FROM products WHERE id = ?',
+            [req.params.id]
+        );
+
+        if (products.length === 0) {
+            await connection.rollback();
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        const product = products[0];
+        const adminUsername = req.user.isSuperAdmin ? 'Super Admin' : req.user.username;
+
+        // Insert into deleted_products
+        await connection.query(
+            `INSERT INTO deleted_products 
+             (id, product_name, product_image, description, price, stock_quantity, 
+              specifications, is_active, original_created_at, original_updated_at, deleted_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                product.id,
+                product.product_name,
+                product.product_image,
+                product.description,
+                product.price,
+                product.stock_quantity,
+                JSON.stringify(product.specifications),
+                product.is_active,
+                product.created_at,
+                product.updated_at,
+                adminUsername
+            ]
+        );
+
+        // Delete from products
+        await connection.query('DELETE FROM products WHERE id = ?', [req.params.id]);
+
+        await connection.commit();
+        res.json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        await connection.rollback();
+        console.error('Delete product error:', error);
+        res.status(500).json({ error: 'Failed to delete product' });
+    } finally {
+        connection.release();
+    }
+});
+
+// Get deleted products
+router.get('/deleted-products', requireAdmin, async (req, res) => {
+    try {
+        const [deletedProducts] = await db.query(
+            'SELECT * FROM deleted_products ORDER BY deleted_at DESC'
+        );
+        res.json(deletedProducts);
+    } catch (error) {
+        console.error('Get deleted products error:', error);
+        res.status(500).json({ error: 'Failed to fetch deleted products' });
+    }
+});
+
+// ==================== ORDER MANAGEMENT ROUTES ====================
+
+// Get all orders with user and product details
+router.get('/orders', requireAdmin, async (req, res) => {
+    try {
+        const { status } = req.query;
+        let query = `SELECT 
+                o.id,
+                o.user_id,
+                o.order_number,
+                o.status,
+                o.payment_method,
+                o.total,
+                o.order_date,
+                u.username,
+                u.email,
+                GROUP_CONCAT(oi.product_name SEPARATOR ', ') as products,
+                SUM(oi.quantity) as total_quantity
+             FROM orders o
+             LEFT JOIN users u ON o.user_id = u.id
+             LEFT JOIN order_items oi ON o.id = oi.order_id`;
+        
+        const params = [];
+        if (status) {
+            query += ` WHERE o.status = ?`;
+            params.push(status);
+        }
+        
+        query += ` GROUP BY o.id ORDER BY o.order_date DESC`;
+        
+        const [orders] = await db.query(query, params);
+        res.json(orders);
+    } catch (error) {
+        console.error('Get orders error:', error);
+        res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+});
+
+// Update order status
+router.patch('/orders/:id/status', requireAdmin, async (req, res) => {
+    const { status } = req.body;
+    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Invalid status value' });
+    }
+
+    try {
+        const [result] = await db.query(
+            'UPDATE orders SET status = ? WHERE id = ?',
+            [status, req.params.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.json({ message: 'Order status updated successfully' });
+    } catch (error) {
+        console.error('Update order status error:', error);
+        res.status(500).json({ error: 'Failed to update order status' });
+    }
+});
+
+// Get orders by product ID
+router.get('/products/:id/orders', requireAdmin, async (req, res) => {
+    try {
+        const [orders] = await db.query(
+            `SELECT 
+                o.id,
+                o.order_number,
+                oi.quantity,
+                oi.subtotal,
+                o.status,
+                o.order_date,
+                u.username,
+                u.email
+             FROM orders o
+             LEFT JOIN users u ON o.user_id = u.id
+             LEFT JOIN order_items oi ON o.id = oi.order_id
+             WHERE oi.product_name = (SELECT product_name FROM products WHERE id = ?)
+             ORDER BY o.order_date DESC`,
+            [req.params.id]
+        );
+        res.json(orders);
+    } catch (error) {
+        console.error('Get product orders error:', error);
+        res.status(500).json({ error: 'Failed to fetch product orders' });
+    }
+});
+
+// Get orders by user ID
+router.get('/users/:id/orders', requireAdmin, async (req, res) => {
+    try {
+        const [orders] = await db.query(
+            `SELECT 
+                o.id,
+                o.user_id,
+                o.order_number,
+                o.status,
+                o.payment_method,
+                o.total,
+                o.order_date,
+                GROUP_CONCAT(oi.product_name SEPARATOR ', ') as products,
+                SUM(oi.quantity) as total_quantity
+             FROM orders o
+             LEFT JOIN order_items oi ON o.id = oi.order_id
+             WHERE o.user_id = ?
+             GROUP BY o.id
+             ORDER BY o.order_date DESC`,
+            [req.params.id]
+        );
+        res.json(orders);
+    } catch (error) {
+        console.error('Get user orders error:', error);
+        res.status(500).json({ error: 'Failed to fetch user orders' });
     }
 });
 

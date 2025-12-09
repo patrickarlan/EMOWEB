@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./productCard.scss"; // ensure your css/scss file is linked
 import OrderPanel from "./OrderPanel";
 import CartPanel from "./CartPanel";
@@ -14,6 +14,53 @@ export default function ProductCard() {
   const [cartPanelOpen, setCartPanelOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Default product images mapping
+  const productImages = {
+    "EMO-S AI ROBOT": emoex,
+    "EMO AI PROTOTYPE": emoex2,
+    "EMO AI PRO": emoex3
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch('/api/products', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch products');
+      const data = await res.json();
+      
+      // Map database products to include images and parse specifications
+      const mappedProducts = data
+        .filter(product => product.is_active) // Only show active products
+        .map(product => ({
+          id: product.id,
+          img: productImages[product.product_name] || emoex,
+          title: product.product_name,
+          desc: product.description,
+          price: product.price,
+          stock: product.stock_quantity,
+          specs: typeof product.specifications === 'string' 
+            ? JSON.parse(product.specifications) 
+            : product.specifications
+        }));
+      
+      setProducts(mappedProducts);
+      setFlipped(new Array(mappedProducts.length).fill(false));
+    } catch (error) {
+      console.error('Fetch products error:', error);
+      setNotification({ 
+        message: 'Failed to load products', 
+        type: 'error' 
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInfoClick = (index) => {
     setFlipped(prev => {
@@ -77,50 +124,25 @@ export default function ProductCard() {
     setSelectedProduct(null);
   };
 
-  const products = [
-    {
-      img: emoex,
-      title: "EMO-S AI ROBOT",
-      desc: "Lorem Ipsum is simply dummy printing and typesetting industry",
-      price: "67",
-      specs: {
-        dimensions: "3.2 x 2.6 x 4.6 cm",
-        weight: "100g",
-        camera: "Raspi Cam",
-        microprocessor: "Raspi 4 8GB R",
-        batteryLife: "4 hrs",
-        warranty: "1 Year"
-      }
-    },
-    {
-      img: emoex2,
-      title: "EMO AI PROTOTYPE",
-      desc: "Lorem Ipsum is simply dummy printing and typesetting industry",
-      price: "40",
-      specs: {
-        dimensions: "3.2 x 2.6 x 4.6 cm",
-        weight: "100g",
-        camera: "Raspi Cam",
-        microprocessor: "Raspi 4 8GB R",
-        batteryLife: "4 hrs",
-        warranty: "1 Year"
-      }
-    },
-    {
-      img: emoex3,
-      title: "EMO AI PRO",
-      desc: "Lorem Ipsum is simply dummy printing and typesetting industry",
-      price: "95",
-      specs: {
-        dimensions: "3.2 x 2.6 x 4.6 cm",
-        weight: "100g",
-        camera: "Raspi Cam",
-        microprocessor: "Raspi 4 8GB R",
-        batteryLife: "4 hrs",
-        warranty: "1 Year"
-      }
-    }
-  ];
+  if (loading) {
+    return (
+      <main role="main" className="product-root">
+        <div style={{ textAlign: 'center', padding: '2rem', color: '#fff' }}>
+          Loading products...
+        </div>
+      </main>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <main role="main" className="product-root">
+        <div style={{ textAlign: 'center', padding: '2rem', color: '#fff' }}>
+          No products available at the moment.
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main role="main" className="product-root">
@@ -149,7 +171,10 @@ export default function ProductCard() {
                   <h1>{product.title}</h1>
                   <p>{product.desc}</p>
                 </div>
-                <div className="price">{product.price}</div>
+                <div className="price" data-length={Math.floor(product.price).toString().length}>
+                  <span className="price-whole">{Math.floor(product.price)}</span>
+                  <span className="price-decimal" style={{fontSize: '0.4em'}}>.{(product.price % 1).toFixed(2).substring(2)}</span>
+                </div>
               </div>
             </div>
 

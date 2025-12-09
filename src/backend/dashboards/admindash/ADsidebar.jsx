@@ -99,7 +99,7 @@ export default function ADSidebar({ activePanel, setActivePanel }) {
                   onClick={() => setActivePanel("products")} 
                   className={`ad-nav-link ${activePanel === "products" ? "active" : ""}`}
                 >
-                  Product M
+                  Product Management
                 </button>
               </li>
               <li className="ad-nav-item">
@@ -107,7 +107,7 @@ export default function ADSidebar({ activePanel, setActivePanel }) {
                   onClick={() => setActivePanel("accounts")} 
                   className={`ad-nav-link ${activePanel === "accounts" ? "active" : ""}`}
                 >
-                  Account S
+                  Account Settings
                 </button>
               </li>
               <li className="ad-nav-item">
@@ -115,7 +115,7 @@ export default function ADSidebar({ activePanel, setActivePanel }) {
                   onClick={() => setActivePanel("system")} 
                   className={`ad-nav-link ${activePanel === "system" ? "active" : ""}`}
                 >
-                  System M
+                  System Management
                 </button>
               </li>
               <li className="ad-nav-item">
@@ -123,7 +123,7 @@ export default function ADSidebar({ activePanel, setActivePanel }) {
                   onClick={() => setActivePanel("admin")} 
                   className={`ad-nav-link ${activePanel === "admin" ? "active" : ""}`}
                 >
-                  Admin
+                  Admin Settings
                 </button>
               </li>
               <li className="ad-nav-divider" aria-hidden />

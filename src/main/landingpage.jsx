@@ -12,7 +12,7 @@ export default function LandingPage() {
 	const panelContent = {
 		website: {
 			title: "Welcome to EMOWEB",
-			subtitle: "EMO AI: Wear Your Emotions, Crafted by AI",
+			subtitle: "EMO AI: Robots That Recognize & Respond to Your Emotions",
 			description: "EMOWEB is your gateway to the future of emotional AI robotics. Our platform connects you with cutting-edge EMO robots designed to understand, express, and interact with human emotions in meaningful ways. Whether you're looking for a companion, a learning tool, or an innovative assistant, EMOWEB brings the next generation of AI directly to you.",
 			features: [
 				"🤖 Advanced emotional recognition technology",
@@ -71,8 +71,8 @@ export default function LandingPage() {
 		<div className="min-h-screen flex flex-col items-center justify-center p-4">
 			<div className="landing-hero">
 				<p className="hero-pretext">Welcome to EMO AI</p>
-				<h2 className="hero-title">EMO AI: Wear Your Emotions, Crafted by AI.</h2>
-				<p className="hero-sub">Artfully transform emotions into wearable stories by AI, reflecting your deepest self in every hue and pattern.</p>
+				<h2 className="hero-title">EMO AI: <br></br>Your Robot Companion.</h2>
+				<p className="hero-sub">Advanced AI technology that understands and responds to human emotions, creating meaningful interactions and intelligent companionship.</p>
 			</div>
 			<div className="landing-wrapper">
 				<div className="left-stack">

@@ -93,6 +93,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
+    overflow-y: auto;
 }
 
 @media (min-width: 1024px) {
@@ -103,6 +104,7 @@
         margin-top: 0; 
         /* make it fill the remaining vertical space in the viewport (accounting for top padding) */
         min-height: calc(100vh - 220px);
+        max-height: calc(100vh - 220px);
     }
     /* Make the four dash boxes stay in the first row */
     .userdash-grid > .dash-box { align-self: start; }
