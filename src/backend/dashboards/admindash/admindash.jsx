@@ -3,6 +3,7 @@ import ADSidebar from "./ADsidebar";
 import AccountSettings from "./components/AccountSettings";
 import ProductSettings from "./components/ProductSettings";
 import AdminProfileSettings from "./components/AdminProfileSettings";
+import PrototypeDashboard from "../../../proto/prototype";
 import "./admindash.css";
 
 export default function AdminDash() {
@@ -92,6 +93,9 @@ export default function AdminDash() {
                             )}
                             {activePanel === "admin" && (
                                 <AdminProfileSettings />
+                            )}
+                            {activePanel === "prototype" && (
+                                <PrototypeDashboard />
                             )}
                         </div>
                     </section>

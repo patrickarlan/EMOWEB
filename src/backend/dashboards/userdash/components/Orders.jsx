@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './styles/Orders.css';
 import Notification from '../../../../components/Notification';
 
-export default function Orders({ onOrderCancelled }) {
+export default function Orders({ onOrderCancelled, filterStatus = 'active' }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -167,6 +167,34 @@ export default function Orders({ onOrderCancelled }) {
     );
   }
 
+  // Filter orders based on the filterStatus prop
+  const filteredOrders = orders.filter(order => {
+    if (filterStatus === 'active') {
+      // Active orders: pending, processing, shipped
+      return ['pending', 'processing', 'shipped'].includes(order.status);
+    } else if (filterStatus === 'delivered') {
+      return order.status === 'delivered';
+    }
+    return true; // Should not reach here as cancelled orders use different component
+  });
+
+  if (filteredOrders.length === 0) {
+    const emptyMessages = {
+      active: 'No active orders at the moment.',
+      delivered: 'No delivered orders yet.'
+    };
+    
+    return (
+      <div className="orders-container">
+        <div className="orders-empty">
+          <div className="empty-icon">📦</div>
+          <h3>No {filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)} Orders</h3>
+          <p>{emptyMessages[filterStatus] || 'No orders found.'}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="orders-container">
       <div className="orders-header">
@@ -175,7 +203,7 @@ export default function Orders({ onOrderCancelled }) {
       </div>
 
       <div className="orders-list">
-        {orders.map((order) => (
+        {filteredOrders.map((order) => (
           <div key={order.id} className="order-card">
             <div className="order-header">
               <div className="order-info">

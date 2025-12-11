@@ -21,6 +21,14 @@ export default function ProductSettings() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [productToDelete, setProductToDelete] = useState(null);
+    
+    // Search states
+    const [userSearchQuery, setUserSearchQuery] = useState('');
+    const [pendingSearchQuery, setPendingSearchQuery] = useState('');
+    const [processingSearchQuery, setProcessingSearchQuery] = useState('');
+    const [shippedSearchQuery, setShippedSearchQuery] = useState('');
+    const [deliveredSearchQuery, setDeliveredSearchQuery] = useState('');
+    const [cancelledSearchQuery, setCancelledSearchQuery] = useState('');
 
     const [editForm, setEditForm] = useState({
         product_name: '',
@@ -188,6 +196,31 @@ export default function ProductSettings() {
             console.error('Fetch cancelled orders error:', error);
             setNotification({ message: 'Failed to load cancelled orders', type: 'error' });
         }
+    };
+
+    // Filter functions
+    const filterUsers = (users) => {
+        if (!userSearchQuery.trim()) return users;
+        const query = userSearchQuery.toLowerCase();
+        return users.filter(user => 
+            user.id.toString().includes(query) ||
+            user.username?.toLowerCase().includes(query) ||
+            user.email?.toLowerCase().includes(query) ||
+            user.first_name?.toLowerCase().includes(query) ||
+            user.last_name?.toLowerCase().includes(query) ||
+            `${user.first_name} ${user.last_name}`.toLowerCase().includes(query)
+        );
+    };
+
+    const filterOrders = (orders, searchQuery) => {
+        if (!searchQuery.trim()) return orders;
+        const query = searchQuery.toLowerCase();
+        return orders.filter(order =>
+            order.order_number?.toLowerCase().includes(query) ||
+            order.username?.toLowerCase().includes(query) ||
+            order.products?.toLowerCase().includes(query) ||
+            order.id.toString().includes(query)
+        );
     };
 
     const handleEditClick = (product) => {
@@ -462,6 +495,24 @@ export default function ProductSettings() {
                     {!selectedUser ? (
                         <div className="ps-users-table">
                             <h3 className="ps-section-title">Select a User to View Their Orders</h3>
+                            <div className="ps-search-bar">
+                                <input
+                                    type="text"
+                                    placeholder="Search by User ID, Username, Email, or Name..."
+                                    value={userSearchQuery}
+                                    onChange={(e) => setUserSearchQuery(e.target.value)}
+                                    className="ps-search-input"
+                                />
+                                {userSearchQuery && (
+                                    <button 
+                                        className="ps-clear-search"
+                                        onClick={() => setUserSearchQuery('')}
+                                        aria-label="Clear search"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
                             <table>
                                 <thead>
                                     <tr>
@@ -473,7 +524,7 @@ export default function ProductSettings() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.length > 0 ? users.map(user => (
+                                    {filterUsers(users).length > 0 ? filterUsers(users).map(user => (
                                         <tr key={user.id}>
                                             <td>#{user.id}</td>
                                             <td>{user.username}</td>
@@ -490,7 +541,9 @@ export default function ProductSettings() {
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan="5" className="no-orders">No users found</td>
+                                            <td colSpan="5" className="no-orders">
+                                                {userSearchQuery ? 'No users match your search' : 'No users found'}
+                                            </td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -566,6 +619,24 @@ export default function ProductSettings() {
                 <div className="ps-content">
                     <div className="ps-orders-table">
                         <h3 className="ps-section-title">Pending Orders</h3>
+                        <div className="ps-search-bar">
+                            <input
+                                type="text"
+                                placeholder="Search by Order #, Username, or Products..."
+                                value={pendingSearchQuery}
+                                onChange={(e) => setPendingSearchQuery(e.target.value)}
+                                className="ps-search-input"
+                            />
+                            {pendingSearchQuery && (
+                                <button 
+                                    className="ps-clear-search"
+                                    onClick={() => setPendingSearchQuery('')}
+                                    aria-label="Clear search"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -579,7 +650,7 @@ export default function ProductSettings() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pendingOrders.length > 0 ? pendingOrders.map(order => (
+                                {filterOrders(pendingOrders, pendingSearchQuery).length > 0 ? filterOrders(pendingOrders, pendingSearchQuery).map(order => (
                                     <tr key={order.id}>
                                         <td>{order.order_number}</td>
                                         <td>{order.username}</td>
@@ -602,7 +673,9 @@ export default function ProductSettings() {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="7" className="no-orders">No pending orders found</td>
+                                        <td colSpan="7" className="no-orders">
+                                            {pendingSearchQuery ? 'No pending orders match your search' : 'No pending orders found'}
+                                        </td>
                                     </tr>
                                 )}
                             </tbody>
@@ -615,6 +688,24 @@ export default function ProductSettings() {
                 <div className="ps-content">
                     <div className="ps-orders-table">
                         <h3 className="ps-section-title">Processing Orders</h3>
+                        <div className="ps-search-bar">
+                            <input
+                                type="text"
+                                placeholder="Search by Order #, Username, or Products..."
+                                value={processingSearchQuery}
+                                onChange={(e) => setProcessingSearchQuery(e.target.value)}
+                                className="ps-search-input"
+                            />
+                            {processingSearchQuery && (
+                                <button 
+                                    className="ps-clear-search"
+                                    onClick={() => setProcessingSearchQuery('')}
+                                    aria-label="Clear search"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -628,7 +719,7 @@ export default function ProductSettings() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {processingOrders.length > 0 ? processingOrders.map(order => (
+                                {filterOrders(processingOrders, processingSearchQuery).length > 0 ? filterOrders(processingOrders, processingSearchQuery).map(order => (
                                     <tr key={order.id}>
                                         <td>{order.order_number}</td>
                                         <td>{order.username}</td>
@@ -651,7 +742,9 @@ export default function ProductSettings() {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="7" className="no-orders">No processing orders found</td>
+                                        <td colSpan="7" className="no-orders">
+                                            {processingSearchQuery ? 'No processing orders match your search' : 'No processing orders found'}
+                                        </td>
                                     </tr>
                                 )}
                             </tbody>
@@ -664,6 +757,24 @@ export default function ProductSettings() {
                 <div className="ps-content">
                     <div className="ps-orders-table">
                         <h3 className="ps-section-title">Shipped Orders</h3>
+                        <div className="ps-search-bar">
+                            <input
+                                type="text"
+                                placeholder="Search by Order #, Username, or Products..."
+                                value={shippedSearchQuery}
+                                onChange={(e) => setShippedSearchQuery(e.target.value)}
+                                className="ps-search-input"
+                            />
+                            {shippedSearchQuery && (
+                                <button 
+                                    className="ps-clear-search"
+                                    onClick={() => setShippedSearchQuery('')}
+                                    aria-label="Clear search"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -677,7 +788,7 @@ export default function ProductSettings() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {shippedOrders.length > 0 ? shippedOrders.map(order => (
+                                {filterOrders(shippedOrders, shippedSearchQuery).length > 0 ? filterOrders(shippedOrders, shippedSearchQuery).map(order => (
                                     <tr key={order.id}>
                                         <td>{order.order_number}</td>
                                         <td>{order.username}</td>
@@ -700,7 +811,9 @@ export default function ProductSettings() {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="7" className="no-orders">No shipped orders found</td>
+                                        <td colSpan="7" className="no-orders">
+                                            {shippedSearchQuery ? 'No shipped orders match your search' : 'No shipped orders found'}
+                                        </td>
                                     </tr>
                                 )}
                             </tbody>
@@ -713,6 +826,24 @@ export default function ProductSettings() {
                 <div className="ps-content">
                     <div className="ps-orders-table">
                         <h3 className="ps-section-title">Delivered Orders</h3>
+                        <div className="ps-search-bar">
+                            <input
+                                type="text"
+                                placeholder="Search by Order #, Username, or Products..."
+                                value={deliveredSearchQuery}
+                                onChange={(e) => setDeliveredSearchQuery(e.target.value)}
+                                className="ps-search-input"
+                            />
+                            {deliveredSearchQuery && (
+                                <button 
+                                    className="ps-clear-search"
+                                    onClick={() => setDeliveredSearchQuery('')}
+                                    aria-label="Clear search"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -726,7 +857,7 @@ export default function ProductSettings() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {deliveredOrders.length > 0 ? deliveredOrders.map(order => (
+                                {filterOrders(deliveredOrders, deliveredSearchQuery).length > 0 ? filterOrders(deliveredOrders, deliveredSearchQuery).map(order => (
                                     <tr key={order.id}>
                                         <td>{order.order_number}</td>
                                         <td>{order.username}</td>
@@ -749,7 +880,9 @@ export default function ProductSettings() {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="7" className="no-orders">No delivered orders found</td>
+                                        <td colSpan="7" className="no-orders">
+                                            {deliveredSearchQuery ? 'No delivered orders match your search' : 'No delivered orders found'}
+                                        </td>
                                     </tr>
                                 )}
                             </tbody>
@@ -762,6 +895,24 @@ export default function ProductSettings() {
                 <div className="ps-content">
                     <div className="ps-orders-table">
                         <h3 className="ps-section-title">Cancelled Orders</h3>
+                        <div className="ps-search-bar">
+                            <input
+                                type="text"
+                                placeholder="Search by Order #, Username, or Products..."
+                                value={cancelledSearchQuery}
+                                onChange={(e) => setCancelledSearchQuery(e.target.value)}
+                                className="ps-search-input"
+                            />
+                            {cancelledSearchQuery && (
+                                <button 
+                                    className="ps-clear-search"
+                                    onClick={() => setCancelledSearchQuery('')}
+                                    aria-label="Clear search"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -775,7 +926,7 @@ export default function ProductSettings() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {cancelledOrders.length > 0 ? cancelledOrders.map(order => (
+                                {filterOrders(cancelledOrders, cancelledSearchQuery).length > 0 ? filterOrders(cancelledOrders, cancelledSearchQuery).map(order => (
                                     <tr key={order.id}>
                                         <td>{order.order_number}</td>
                                         <td>{order.username}</td>
@@ -798,7 +949,9 @@ export default function ProductSettings() {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="7" className="no-orders">No cancelled orders found</td>
+                                        <td colSpan="7" className="no-orders">
+                                            {cancelledSearchQuery ? 'No cancelled orders match your search' : 'No cancelled orders found'}
+                                        </td>
                                     </tr>
                                 )}
                             </tbody>

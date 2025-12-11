@@ -255,6 +255,35 @@
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
 }
 
+/* Logout button */
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  color: rgba(239, 68, 68, 0.9);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.logout-button svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* Dashboard dropdown menu for database admins */
 .dashboard-menu-container {
   position: relative;

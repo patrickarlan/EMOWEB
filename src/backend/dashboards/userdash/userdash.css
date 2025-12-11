@@ -270,13 +270,19 @@
 .us-sidebar-footer { width:100%; }
 .us-logout { width:calc(100% - 8px); }
 
-.userdash-main { margin-left: 340px; padding: 28px; }
+.userdash-main { 
+    margin-left: 340px; 
+    padding: 28px;
+    overflow: visible;
+}
 
 /* Dashboard Switcher */
 .dashboard-switcher {
     margin-bottom: 20px;
     display: flex;
     justify-content: flex-end;
+    position: relative;
+    z-index: 10;
 }
 
 .btn-switch-dashboard {
@@ -293,6 +299,8 @@
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
+    position: relative;
+    z-index: 10;
 }
 
 .btn-switch-dashboard:hover {

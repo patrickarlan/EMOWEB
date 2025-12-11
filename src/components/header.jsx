@@ -122,6 +122,16 @@ export default function Header() {
   const avatarLetter = user?.username ? user.username.charAt(0).toUpperCase() : 'U';
   const profilePicture = user?.profilePicture ? `http://localhost:4000${user.profilePicture}` : null;
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      setUser(null);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   const handleSearchFocus = () => {
     setShowSearchDropdown(true);
   };
@@ -289,45 +299,60 @@ export default function Header() {
         </Link>
         
         {user ? (
-          user.role === 'admin' && !user.isSuperAdmin ? (
-            <div className="dashboard-menu-container" ref={dashboardMenuRef}>
-              <button 
+          <>
+            {user.role === 'admin' && !user.isSuperAdmin ? (
+              <div className="dashboard-menu-container" ref={dashboardMenuRef}>
+                <button 
+                  className="profile-button profile-button-logged" 
+                  aria-label="User profile"
+                  onClick={() => setShowDashboardMenu(!showDashboardMenu)}
+                >
+                  {profilePicture ? (
+                    <img src={profilePicture} alt="Profile" className="profile-button-img" />
+                  ) : (
+                    <span className="profile-button-letter">{avatarLetter}</span>
+                  )}
+                </button>
+                {showDashboardMenu && (
+                  <div className="dashboard-dropdown">
+                    <Link to="/userdash" className="dashboard-option">
+                      <i className="fas fa-user"></i>
+                      <span>User Dashboard</span>
+                    </Link>
+                    <Link to="/admindash" className="dashboard-option">
+                      <i className="fas fa-user-shield"></i>
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link 
+                to={user.isSuperAdmin || user.role === 'super_admin' ? '/admindash' : '/userdash'} 
                 className="profile-button profile-button-logged" 
                 aria-label="User profile"
-                onClick={() => setShowDashboardMenu(!showDashboardMenu)}
               >
                 {profilePicture ? (
                   <img src={profilePicture} alt="Profile" className="profile-button-img" />
                 ) : (
                   <span className="profile-button-letter">{avatarLetter}</span>
                 )}
-              </button>
-              {showDashboardMenu && (
-                <div className="dashboard-dropdown">
-                  <Link to="/userdash" className="dashboard-option">
-                    <i className="fas fa-user"></i>
-                    <span>User Dashboard</span>
-                  </Link>
-                  <Link to="/admindash" className="dashboard-option">
-                    <i className="fas fa-user-shield"></i>
-                    <span>Admin Dashboard</span>
-                  </Link>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link 
-              to={user.isSuperAdmin || user.role === 'super_admin' ? '/admindash' : '/userdash'} 
-              className="profile-button profile-button-logged" 
-              aria-label="User profile"
+              </Link>
+            )}
+            
+            <button 
+              className="logout-button" 
+              onClick={handleLogout}
+              aria-label="Logout"
+              title="Logout"
             >
-              {profilePicture ? (
-                <img src={profilePicture} alt="Profile" className="profile-button-img" />
-              ) : (
-                <span className="profile-button-letter">{avatarLetter}</span>
-              )}
-            </Link>
-          )
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+            </button>
+          </>
         ) : (
           <Link to="/signform" className="profile-button" aria-label="User profile">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

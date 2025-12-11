@@ -6,11 +6,12 @@ import Orders from "./components/Orders";
 import CancelledOrders from "./components/CancelledOrders";
 import Cart from "./components/Cart";
 import PasswordVerification from "../../../components/PasswordVerification";
+import PrototypeDashboard from "../../../proto/prototype";
 import "../userdash/userdash.css";
 
 export default function UserDash() {
     const [activePanel, setActivePanel] = useState("orders");
-    const [showCancelledOrders, setShowCancelledOrders] = useState(false);
+    const [orderFilter, setOrderFilter] = useState("active"); // "active", "delivered", "cancelled"
     const [verificationOpen, setVerificationOpen] = useState(false);
     const [pendingPanel, setPendingPanel] = useState(null);
     const [verifiedSections, setVerifiedSections] = useState(new Set());
@@ -214,6 +215,7 @@ export default function UserDash() {
                         <h2 className="dash-title">Settings</h2>
                         <p className="dash-desc">Account settings and preferences.</p>
                     </article>
+
                     {/* Detail panel placed as a grid child so it lines up with the fourth column on wide screens */}
                     <section className="dash-detail" aria-label="Detail panel">
                         <div className="dash-detail-inner">
@@ -222,23 +224,37 @@ export default function UserDash() {
                                 <>
                                     <div className="orders-toggle">
                                         <button 
-                                            className={`toggle-btn ${!showCancelledOrders ? 'active' : ''}`}
-                                            onClick={() => setShowCancelledOrders(false)}
+                                            className={`toggle-btn ${orderFilter === 'active' ? 'active' : ''}`}
+                                            onClick={() => setOrderFilter('active')}
                                         >
                                             Active Orders
                                         </button>
                                         <button 
-                                            className={`toggle-btn ${showCancelledOrders ? 'active' : ''}`}
-                                            onClick={() => setShowCancelledOrders(true)}
+                                            className={`toggle-btn ${orderFilter === 'delivered' ? 'active' : ''}`}
+                                            onClick={() => setOrderFilter('delivered')}
+                                        >
+                                            Delivered
+                                        </button>
+                                        <button 
+                                            className={`toggle-btn ${orderFilter === 'cancelled' ? 'active' : ''}`}
+                                            onClick={() => setOrderFilter('cancelled')}
                                         >
                                             Cancelled Orders
                                         </button>
                                     </div>
-                                    {showCancelledOrders ? <CancelledOrders /> : <Orders onOrderCancelled={() => setShowCancelledOrders(true)} />}
+                                    {orderFilter === 'cancelled' ? (
+                                        <CancelledOrders />
+                                    ) : (
+                                        <Orders 
+                                            filterStatus={orderFilter} 
+                                            onOrderCancelled={() => setOrderFilter('cancelled')} 
+                                        />
+                                    )}
                                 </>
                             )}
                             {activePanel === "cart" && <Cart />}
                             {activePanel === "settings" && <AccountSettings onRequestDeactivation={handleRequestDeactivation} />}
+                            {activePanel === "system" && <PrototypeDashboard />}
                         </div>
                     </section>
                 </section>

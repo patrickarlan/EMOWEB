@@ -126,6 +126,14 @@ export default function ADSidebar({ activePanel, setActivePanel }) {
                   Admin Settings
                 </button>
               </li>
+              <li className="ad-nav-item">
+                <button 
+                  onClick={() => setActivePanel("prototype")} 
+                  className={`ad-nav-link ${activePanel === "prototype" ? "active" : ""}`}
+                >
+                  System
+                </button>
+              </li>
               <li className="ad-nav-divider" aria-hidden />
             </ul>
           </nav>
