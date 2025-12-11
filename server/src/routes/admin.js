@@ -527,8 +527,14 @@ router.put('/users/:id/status', requireAdmin, async (req, res) => {
 
         const newStatus = !users[0].is_active;
 
-        // Toggle status
-        await db.query('UPDATE users SET is_active = ? WHERE id = ?', [newStatus, id]);
+        // Toggle status - when admin deactivates, clear deactivated_until to distinguish from user deactivation
+        if (newStatus === 0 || newStatus === false) {
+            // Deactivating - clear deactivated_until
+            await db.query('UPDATE users SET is_active = ?, deactivated_until = NULL WHERE id = ?', [newStatus, id]);
+        } else {
+            // Activating - just set is_active
+            await db.query('UPDATE users SET is_active = ? WHERE id = ?', [newStatus, id]);
+        }
 
         res.json({
             success: true,
@@ -739,16 +745,80 @@ router.patch('/orders/:id/status', requireAdmin, async (req, res) => {
     }
 
     try {
+        // Get current order status
+        const [orderRows] = await db.query(
+            'SELECT status FROM orders WHERE id = ?',
+            [req.params.id]
+        );
+
+        if (orderRows.length === 0) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        const currentStatus = orderRows[0].status;
+        console.log(`Order ${req.params.id}: Current status = ${currentStatus}, New status = ${status}`);
+
+        // Update order status
         const [result] = await db.query(
             'UPDATE orders SET status = ? WHERE id = ?',
             [status, req.params.id]
         );
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Order not found' });
+        // If status changed to 'shipped', decrement stock
+        if (status === 'shipped' && currentStatus !== 'shipped') {
+            console.log(`Status changed to shipped for order ${req.params.id}, checking items...`);
+            
+            // Get all order items
+            const [items] = await db.query(
+                `SELECT product_id, quantity, product_name 
+                 FROM order_items 
+                 WHERE order_id = ?`,
+                [req.params.id]
+            );
+
+            console.log(`Found ${items.length} items:`, items);
+
+            // Decrement stock for each product
+            for (const item of items) {
+                let productId = item.product_id;
+                
+                // If product_id is null, try to find it by product_name
+                if (!productId && item.product_name) {
+                    console.log(`No product_id for item, looking up by name: ${item.product_name}`);
+                    const [products] = await db.query(
+                        'SELECT id FROM products WHERE product_name = ? LIMIT 1',
+                        [item.product_name]
+                    );
+                    if (products.length > 0) {
+                        productId = products[0].id;
+                        // Update the order_item with the product_id for future use
+                        await db.query(
+                            'UPDATE order_items SET product_id = ? WHERE order_id = ? AND product_name = ?',
+                            [productId, req.params.id, item.product_name]
+                        );
+                        console.log(`Updated order_item with product_id: ${productId}`);
+                    }
+                }
+                
+                if (productId) {
+                    const [updateResult] = await db.query(
+                        'UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?',
+                        [item.quantity, productId, item.quantity]
+                    );
+                    
+                    console.log(`Stock decrement for product ${item.product_name} (ID: ${productId}): -${item.quantity}, Rows affected: ${updateResult.affectedRows}`);
+                } else {
+                    console.log(`Could not find product_id for: ${item.product_name}, skipping stock decrement`);
+                }
+            }
+        } else {
+            console.log(`Skipping stock decrement: status=${status}, currentStatus=${currentStatus}`);
         }
 
-        res.json({ message: 'Order status updated successfully' });
+        res.json({ 
+            message: 'Order status updated successfully',
+            stockUpdated: status === 'shipped' && currentStatus !== 'shipped'
+        });
     } catch (error) {
         console.error('Update order status error:', error);
         res.status(500).json({ error: 'Failed to update order status' });

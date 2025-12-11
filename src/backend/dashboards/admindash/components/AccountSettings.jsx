@@ -17,6 +17,7 @@ export default function AccountSettings() {
     const [deletedUsers, setDeletedUsers] = useState([]);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null);
+    const [roleFilter, setRoleFilter] = useState(null); // null = all, 'user', 'admin'
 
     const roleOptions = [
         { value: 'user', label: 'User' },
@@ -326,13 +327,19 @@ export default function AccountSettings() {
             filtered = deletedUsers;
         }
 
-        // Apply search filter
+        // Apply role filter
+        if (roleFilter) {
+            filtered = filtered.filter(user => user.role === roleFilter);
+        }
+
+        // Apply search filter - now includes role
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(user => 
                 user.username.toLowerCase().includes(query) ||
                 user.email.toLowerCase().includes(query) ||
-                (user.contactNumber && user.contactNumber.includes(query))
+                (user.contactNumber && user.contactNumber.includes(query)) ||
+                user.role.toLowerCase().includes(query)
             );
         }
 
@@ -391,7 +398,7 @@ export default function AccountSettings() {
             <div className="user-search-bar">
                 <input
                     type="text"
-                    placeholder="Search by username, email, or contact number..."
+                    placeholder="Search by username, email, contact number, or role..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="search-input"
@@ -414,7 +421,13 @@ export default function AccountSettings() {
                             <th>Username</th>
                             <th>Email</th>
                             <th>Contact Number</th>
-                            <th>Role</th>
+                            <th 
+                                className="clickable-header"
+                                onClick={() => setRoleFilter(roleFilter === null ? 'user' : roleFilter === 'user' ? 'admin' : null)}
+                                title="Click to filter by role"
+                            >
+                                Role {roleFilter && `(${roleFilter})`}
+                            </th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>

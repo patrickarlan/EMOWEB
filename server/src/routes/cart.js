@@ -11,6 +11,7 @@ router.get('/', requireAuth, async (req, res) => {
     const [cartItems] = await pool.query(
       `SELECT 
         id,
+        product_id,
         product_name,
         product_image,
         quantity,
@@ -33,7 +34,7 @@ router.get('/', requireAuth, async (req, res) => {
 router.post('/add', requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { productName, productImage, quantity, price } = req.body;
+    const { productId, productName, productImage, quantity, price } = req.body;
 
     if (!productName || !quantity || !price) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -61,9 +62,9 @@ router.post('/add', requireAuth, async (req, res) => {
     } else {
       // Insert new item
       const [result] = await pool.query(
-        `INSERT INTO cart (user_id, product_name, product_image, quantity, price) 
-        VALUES (?, ?, ?, ?, ?)`,
-        [userId, productName, productImage || '', quantity, price]
+        `INSERT INTO cart (user_id, product_id, product_name, product_image, quantity, price) 
+        VALUES (?, ?, ?, ?, ?, ?)`,
+        [userId, productId || null, productName, productImage || '', quantity, price]
       );
 
       res.status(201).json({
@@ -157,7 +158,7 @@ router.post('/checkout', requireAuth, async (req, res) => {
 
     // Get cart items
     const [cartItems] = await connection.query(
-      'SELECT * FROM cart WHERE user_id = ?',
+      'SELECT id, product_id, product_name, product_image, quantity, price FROM cart WHERE user_id = ?',
       [userId]
     );
 
@@ -193,9 +194,9 @@ router.post('/checkout', requireAuth, async (req, res) => {
       const itemSubtotal = parseFloat(item.price) * parseInt(item.quantity);
       await connection.query(
         `INSERT INTO order_items 
-          (order_id, product_name, product_image, quantity, price, subtotal) 
-        VALUES (?, ?, ?, ?, ?, ?)`,
-        [orderId, item.product_name, item.product_image, item.quantity, item.price, itemSubtotal]
+          (order_id, product_id, product_name, product_image, quantity, price, subtotal) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [orderId, item.product_id, item.product_name, item.product_image, item.quantity, item.price, itemSubtotal]
       );
     }
 

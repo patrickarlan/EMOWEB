@@ -322,6 +322,17 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+.admin-form-input.error {
+  border: 2px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  animation: adminErrorPulse 0.5s ease;
+}
+
+@keyframes adminErrorPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
+}
+
 .admin-form-input::placeholder {
   color: rgba(255, 255, 255, 0.4);
 }
@@ -439,4 +450,63 @@
   .admin-btn-cancel {
     width: 100%;
   }
+}
+
+/* Input with tooltip wrapper */
+.input-with-tooltip {
+  position: relative;
+  width: 100%;
+}
+
+/* Error tooltip styling */
+.error-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Tooltip arrow */
+.error-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #dc2626;
+}
+
+/* Show tooltip on hover */
+.input-with-tooltip:hover .error-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+/* Also show tooltip when input is focused */
+.input-with-tooltip input:focus ~ .error-tooltip,
+.input-with-tooltip .admin-password-input-wrapper input:focus ~ .error-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+/* Special positioning for password wrapper */
+.input-with-tooltip .admin-password-input-wrapper {
+  position: relative;
+}
+
+.input-with-tooltip .admin-password-input-wrapper ~ .error-tooltip {
+  bottom: calc(100% + 5px);
 }

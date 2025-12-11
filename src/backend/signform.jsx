@@ -11,6 +11,7 @@ export default function SignForm() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [notification, setNotification] = useState(null);
+    const [deactivationModal, setDeactivationModal] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -41,7 +42,23 @@ export default function SignForm() {
             const data = await response.json();
 
             if (!response.ok) {
-                setError(data.error || "Login failed");
+                // Check if this is a deactivation error
+                if (data.type === 'admin_deactivated') {
+                    setDeactivationModal({
+                        type: 'admin',
+                        message: data.message || 'Your account has been deactivated by an administrator. Please contact support for assistance.'
+                    });
+                } else if (data.type === 'user_deactivated') {
+                    const deactivatedDate = new Date(data.deactivatedUntil);
+                    setDeactivationModal({
+                        type: 'user',
+                        message: data.message,
+                        deactivatedUntil: deactivatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        deactivatedTime: deactivatedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                    });
+                } else {
+                    setError(data.error || "Login failed");
+                }
                 setLoading(false);
                 return;
             }
@@ -102,10 +119,10 @@ export default function SignForm() {
                 )}
 
                 <form className="sf-form" onSubmit={handleSubmit}>
-                    <input id="username" className="usertextbox" type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required />
+                    <input id="username" className={`usertextbox ${error ? 'error' : ''}`} type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required />
 
                     <div className="sf-password-row">
-                      <input id="password" className="passtextbox" type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+                      <input id="password" className={`passtextbox ${error ? 'error' : ''}`} type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
                       <button type="button" aria-pressed={showPassword} className="sf-showpw" onClick={() => setShowPassword(s => !s)}>{showPassword ? 'Hide' : 'Show'}</button>
                     </div>
 
@@ -117,7 +134,7 @@ export default function SignForm() {
                                                 <a href="#" className="sf-forgot">Forgot password?</a>
                                         </div>
 
-                        <button className="submitbutton" type="submit" disabled={loading}>
+                        <button className={`submitbutton ${error ? 'error' : ''}`} type="submit" disabled={loading}>
                             {loading ? "Signing in..." : "Sign In"}
                         </button>
                 </form>
@@ -137,6 +154,54 @@ export default function SignForm() {
                     </span>
                 </Link>
             </div>
+
+            {/* Deactivation Modal */}
+            {deactivationModal && (
+                <div className="deactivation-modal-overlay" onClick={() => setDeactivationModal(null)}>
+                    <div className="deactivation-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="deactivation-modal-icon">
+                            {deactivationModal.type === 'admin' ? (
+                                <svg viewBox="0 0 52 52" className="deactivation-lock">
+                                    <circle className="deactivation-circle" cx="26" cy="26" r="25" fill="none"/>
+                                    <path className="deactivation-lock-body" d="M26 15v-4a6 6 0 0 0-6 6v4m0 0h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H20a2 2 0 0 1-2-2V23a2 2 0 0 1 2-2z" fill="none" stroke="#ef4444" strokeWidth="2"/>
+                                </svg>
+                            ) : (
+                                <svg viewBox="0 0 52 52" className="deactivation-clock">
+                                    <circle className="deactivation-circle" cx="26" cy="26" r="25" fill="none"/>
+                                    <circle cx="26" cy="26" r="10" fill="none" stroke="#f59e0b" strokeWidth="2"/>
+                                    <path d="M26 20v6l4 2" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                            )}
+                        </div>
+                        <h2 className="deactivation-modal-title">
+                            {deactivationModal.type === 'admin' ? 'Account Deactivated' : 'Account Temporarily Deactivated'}
+                        </h2>
+                        <p className="deactivation-modal-message">
+                            {deactivationModal.message}
+                        </p>
+                        {deactivationModal.type === 'user' && (
+                            <div className="deactivation-dates">
+                                <div className="deactivation-date-item">
+                                    <span className="deactivation-date-label">Reactivation Date:</span>
+                                    <span className="deactivation-date-value">{deactivationModal.deactivatedUntil}</span>
+                                </div>
+                                <div className="deactivation-date-item">
+                                    <span className="deactivation-date-label">Reactivation Time:</span>
+                                    <span className="deactivation-date-value">{deactivationModal.deactivatedTime}</span>
+                                </div>
+                            </div>
+                        )}
+                        {deactivationModal.type === 'admin' && (
+                            <p className="deactivation-support-info">
+                                📧 Contact support: <Link to="/contact" className="deactivation-support-link">Visit Contact Page</Link>
+                            </p>
+                        )}
+                        <button className="deactivation-modal-close" onClick={() => setDeactivationModal(null)}>
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

@@ -22,6 +22,7 @@ export default function CartPanel({ product, onClose }) {
         },
         credentials: 'include',
         body: JSON.stringify({
+          productId: product.id,
           productName: product.title,
           productImage: product.img,
           quantity: quantity,

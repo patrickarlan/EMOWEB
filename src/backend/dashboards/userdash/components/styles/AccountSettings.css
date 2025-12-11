@@ -159,6 +159,17 @@
   background: rgba(0, 0, 0, 0.18) !important;
 }
 
+.form-input.error {
+  border: 2px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  animation: errorPulse 0.5s ease;
+}
+
+@keyframes errorPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
+}
+
 .form-input::placeholder {
   color: rgba(255, 255, 255, 0.4);
 }
@@ -179,6 +190,100 @@
   background-color: rgba(31, 47, 71, 1) !important;
   color: #ffffff;
   padding: 10px;
+}
+
+/* React-Select Styling */
+.react-select-container {
+  margin-bottom: 0;
+}
+
+.react-select__control {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px !important;
+  padding: 6px 12px !important;
+  min-height: 48px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.react-select__control:hover {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.react-select__control--is-focused {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.react-select__single-value {
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.react-select__placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.react-select__indicator-separator {
+  display: none !important;
+}
+
+.react-select__dropdown-indicator {
+  color: rgba(255, 255, 255, 0.6) !important;
+  transition: color 0.3s ease !important;
+}
+
+.react-select__dropdown-indicator:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.react-select__menu {
+  background-color: rgba(31, 47, 71, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden !important;
+  margin-top: 4px !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.react-select__menu-list {
+  padding: 4px !important;
+}
+
+.react-select__option {
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  font-size: 14px !important;
+
+}
+
+.react-select__option:hover {
+  background-color: rgba(139, 92, 246, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.react-select__option--is-focused {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+  color: #ffffff !important;
+}
+
+.react-select__option--is-selected {
+  background-color: rgba(139, 92, 246, 0.3) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.react-select__option--is-selected:hover {
+  background-color: rgba(139, 92, 246, 0.4) !important;
 }
 
 /* Buttons */
@@ -304,4 +409,84 @@
   .deactivate-container {
     max-width: 100%;
   }
+}
+
+/* Password input wrapper */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  font-size: 1rem;
+}
+
+.password-toggle-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.password-input-wrapper .form-input {
+  padding-right: 40px;
+}
+
+/* Input with tooltip wrapper */
+.input-with-tooltip {
+  position: relative;
+  width: 100%;
+}
+
+/* Error tooltip styling */
+.error-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Tooltip arrow */
+.error-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #dc2626;
+}
+
+/* Show tooltip on hover */
+.input-with-tooltip:hover .error-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+/* Also show tooltip when input is focused */
+.input-with-tooltip input:focus ~ .error-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px);
 }

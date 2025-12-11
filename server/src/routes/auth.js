@@ -73,13 +73,52 @@ router.post('/login', async (req, res) => {
 			});
 		}
 
-		// Regular user login
-		const [rows] = await pool.execute('SELECT id, username, email, password_hash, role FROM users WHERE username = ? OR email = ? LIMIT 1', [username, username]);
+		// Regular user login - fetch user with deactivation info
+		const [rows] = await pool.execute(
+			'SELECT id, username, email, password_hash, role, is_active, deactivated_until FROM users WHERE username = ? OR email = ? LIMIT 1', 
+			[username, username]
+		);
 		if (!rows.length) return res.status(401).json({ error: 'Invalid username or password' });
 
 		const user = rows[0];
 		const match = await bcrypt.compare(password, user.password_hash);
 		if (!match) return res.status(401).json({ error: 'Invalid username or password' });
+
+		console.log('User login attempt:', user.id, 'is_active:', user.is_active, 'deactivated_until:', user.deactivated_until);
+
+		// Check if account is deactivated
+		if (user.is_active === 0 || user.is_active === false) {
+			// User deactivated their own account (has deactivated_until date)
+			if (user.deactivated_until) {
+				const deactivatedDate = new Date(user.deactivated_until);
+				const now = new Date();
+				
+				// Check if reactivation date has passed
+				if (now >= deactivatedDate) {
+					// Auto-reactivate the account
+					await pool.execute(
+						'UPDATE users SET is_active = 1, deactivated_until = NULL WHERE id = ?',
+						[user.id]
+					);
+					// Continue with login (account is now active)
+				} else {
+					// Still within deactivation period
+					return res.status(403).json({ 
+						error: 'Account is temporarily deactivated',
+						type: 'user_deactivated',
+						deactivatedUntil: user.deactivated_until,
+						message: `Your account is temporarily deactivated and will be reactivated on ${deactivatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.`
+					});
+				}
+			} else {
+				// Admin deactivated the account (no deactivated_until date)
+				return res.status(403).json({ 
+					error: 'Account is deactivated',
+					type: 'admin_deactivated',
+					message: 'Your account has been deactivated by an administrator. Please contact support for assistance.'
+				});
+			}
+		}
 
 		// Success - sign JWT and set as HttpOnly cookie
 		// If rememberMe is checked, token expires in 30 days, otherwise 7 days

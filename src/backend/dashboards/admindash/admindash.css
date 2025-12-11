@@ -306,6 +306,41 @@
     flex: 1; 
 }
 
+/* Dashboard Switcher */
+.dashboard-switcher {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-switch-dashboard {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(125, 211, 252, 0.15));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-switch-dashboard:hover {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(125, 211, 252, 0.25));
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.switch-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
 /* Responsive: collapse sidebar to top strip on small screens */
 @media (max-width: 720px) {
     .admindash-layout { flex-direction: column; }

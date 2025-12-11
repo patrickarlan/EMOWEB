@@ -207,6 +207,12 @@ export default function ProductCard() {
                     <span className="spec-label">Warranty:</span>
                     <span className="spec-value">{product.specs.warranty}</span>
                   </li>
+                  <li>
+                    <span className="spec-label">Stock:</span>
+                    <span className={`spec-value ${product.stock <= 10 ? 'low-stock' : ''}`}>
+                      {product.stock > 0 ? `${product.stock} units` : 'Out of Stock'}
+                    </span>
+                  </li>
                 </ul>
               </div>
             </div>

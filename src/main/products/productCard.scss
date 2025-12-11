@@ -211,6 +211,11 @@ main[role="main"] {
           color: #666;
           font-size: 0.85em;
           text-align: right;
+
+          &.low-stock {
+            color: #ff6b6b;
+            font-weight: 600;
+          }
         }
       }
     }

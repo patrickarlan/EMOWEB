@@ -18,10 +18,10 @@ $yellow: #f4c542;
 
 // Cart Panel Container
 .cart-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -30,7 +30,7 @@ $yellow: #f4c542;
   width: 90%;
   max-height: 90vh;
   overflow: hidden;
-  animation: scaleIn 0.3s ease;
+  animation: popupFadeIn 0.3s ease forwards !important;
 
   .cart-close {
     position: absolute;
@@ -218,6 +218,17 @@ $yellow: #f4c542;
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes popupFadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

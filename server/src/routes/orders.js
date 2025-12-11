@@ -215,9 +215,9 @@ router.post('/create', requireAuth, async (req, res) => {
       const itemSubtotal = parseFloat(item.price) * parseInt(item.quantity);
       await connection.query(
         `INSERT INTO order_items 
-          (order_id, product_name, product_image, quantity, price, subtotal) 
-        VALUES (?, ?, ?, ?, ?, ?)`,
-        [orderId, item.productName, item.productImage || '', item.quantity, item.price, itemSubtotal]
+          (order_id, product_id, product_name, product_image, quantity, price, subtotal) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [orderId, item.productId || null, item.productName, item.productImage || '', item.quantity, item.price, itemSubtotal]
       );
     }
 

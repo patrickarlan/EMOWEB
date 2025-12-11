@@ -34,6 +34,7 @@ export default function AdminProfileSettings() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState({});
 
   const regions = [
     "Asia",
@@ -340,21 +341,42 @@ export default function AdminProfileSettings() {
       ...prev,
       [name]: value
     }));
+    // Clear error for this field when user starts typing
+    if (passwordErrors[name]) {
+      setPasswordErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
+    const errors = {};
     
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setMessage({ type: "error", text: "New passwords do not match" });
+    if (!passwordData.currentPassword) {
+      errors.currentPassword = "Current password is required";
+    }
+    if (!passwordData.newPassword) {
+      errors.newPassword = "New password is required";
+    } else if (passwordData.newPassword.length < 6) {
+      errors.newPassword = "Password must be at least 6 characters";
+    } else if (passwordData.newPassword === passwordData.currentPassword) {
+      errors.newPassword = "New password must be different from current password";
+    }
+    if (!passwordData.confirmPassword) {
+      errors.confirmPassword = "Please confirm your password";
+    } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setPasswordErrors(errors);
       return;
     }
 
-    if (passwordData.newPassword.length < 6) {
-      setMessage({ type: "error", text: "New password must be at least 6 characters" });
-      return;
-    }
-
+    setPasswordErrors({});
     setChangingPassword(true);
     setMessage({ type: "", text: "" });
 
@@ -378,10 +400,16 @@ export default function AdminProfileSettings() {
           newPassword: "",
           confirmPassword: ""
         });
+        setPasswordErrors({});
         setShowPasswordChange(false);
       } else {
         const errorData = await response.json();
-        setMessage({ type: "error", text: errorData.error || "Failed to change password" });
+        // Set error on the appropriate field
+        if (errorData.error && errorData.error.toLowerCase().includes('current password')) {
+          setPasswordErrors({ currentPassword: errorData.error });
+        } else {
+          setMessage({ type: "error", text: errorData.error || "Failed to change password" });
+        }
       }
     } catch (error) {
       console.error("Error changing password:", error);
@@ -443,24 +471,29 @@ export default function AdminProfileSettings() {
             <label htmlFor="currentPassword" className="admin-form-label">
               Current Password
             </label>
-            <div className="admin-password-input-wrapper">
-              <input
-                type={showCurrentPassword ? "text" : "password"}
-                id="currentPassword"
-                name="currentPassword"
-                value={passwordData.currentPassword}
-                onChange={handlePasswordChange}
-                className="admin-form-input"
-                placeholder="Enter current password"
-                required
-              />
-              <button
-                type="button"
-                className="admin-password-toggle"
-                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              >
-                <i className={`fas ${showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
+            <div className="input-with-tooltip">
+              <div className="admin-password-input-wrapper">
+                <input
+                  type={showCurrentPassword ? "text" : "password"}
+                  id="currentPassword"
+                  name="currentPassword"
+                  value={passwordData.currentPassword}
+                  onChange={handlePasswordChange}
+                  className={`admin-form-input ${passwordErrors.currentPassword ? 'error' : ''}`}
+                  placeholder="Enter current password"
+                  autoComplete="off"
+                  data-form-type="other"
+                  required
+                />
+                <button
+                  type="button"
+                  className="admin-password-toggle"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                  <i className={`fas ${showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+              {passwordErrors.currentPassword && <span className="error-tooltip">{passwordErrors.currentPassword}</span>}
             </div>
           </div>
 
@@ -468,24 +501,29 @@ export default function AdminProfileSettings() {
             <label htmlFor="newPassword" className="admin-form-label">
               New Password
             </label>
-            <div className="admin-password-input-wrapper">
-              <input
-                type={showNewPassword ? "text" : "password"}
-                id="newPassword"
-                name="newPassword"
-                value={passwordData.newPassword}
-                onChange={handlePasswordChange}
-                className="admin-form-input"
-                placeholder="Enter new password (min 6 characters)"
-                required
-              />
-              <button
-                type="button"
-                className="admin-password-toggle"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-              >
-                <i className={`fas ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
+            <div className="input-with-tooltip">
+              <div className="admin-password-input-wrapper">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  id="newPassword"
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+                  className={`admin-form-input ${passwordErrors.newPassword ? 'error' : ''}`}
+                  placeholder="Enter new password (min 6 characters)"
+                  autoComplete="new-password"
+                  data-form-type="other"
+                  required
+                />
+                <button
+                  type="button"
+                  className="admin-password-toggle"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  <i className={`fas ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+              {passwordErrors.newPassword && <span className="error-tooltip">{passwordErrors.newPassword}</span>}
             </div>
           </div>
 
@@ -493,24 +531,29 @@ export default function AdminProfileSettings() {
             <label htmlFor="confirmPassword" className="admin-form-label">
               Confirm New Password
             </label>
-            <div className="admin-password-input-wrapper">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                id="confirmPassword"
-                name="confirmPassword"
-                value={passwordData.confirmPassword}
-                onChange={handlePasswordChange}
-                className="admin-form-input"
-                placeholder="Confirm new password"
-                required
-              />
-              <button
-                type="button"
-                className="admin-password-toggle"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
+            <div className="input-with-tooltip">
+              <div className="admin-password-input-wrapper">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordChange}
+                  className={`admin-form-input ${passwordErrors.confirmPassword ? 'error' : ''}`}
+                  placeholder="Confirm new password"
+                  autoComplete="new-password"
+                  data-form-type="other"
+                  required
+                />
+                <button
+                  type="button"
+                  className="admin-password-toggle"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+              {passwordErrors.confirmPassword && <span className="error-tooltip">{passwordErrors.confirmPassword}</span>}
             </div>
           </div>
 

@@ -185,6 +185,22 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.users-table th.clickable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.users-table th.clickable-header:hover {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.15);
+}
+
+.users-table th.clickable-header:active {
+    transform: scale(0.98);
+}
+
 .users-table td {
     padding: 14px 16px;
     color: #dbeafe;

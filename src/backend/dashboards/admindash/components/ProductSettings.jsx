@@ -8,11 +8,15 @@ export default function ProductSettings() {
     const [users, setUsers] = useState([]);
     const [selectedUserOrders, setSelectedUserOrders] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [pendingOrders, setPendingOrders] = useState([]);
     const [processingOrders, setProcessingOrders] = useState([]);
+    const [shippedOrders, setShippedOrders] = useState([]);
+    const [deliveredOrders, setDeliveredOrders] = useState([]);
     const [cancelledOrders, setCancelledOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('stock');
     const [notification, setNotification] = useState(null);
+    const [confirmModal, setConfirmModal] = useState(null);
     const [editingProduct, setEditingProduct] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -49,7 +53,12 @@ export default function ProductSettings() {
             ...base,
             background: 'rgba(30, 30, 30, 0.95)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 107, 53, 0.3)'
+            border: '1px solid rgba(255, 107, 53, 0.3)',
+            zIndex: 9999
+        }),
+        menuPortal: (base) => ({
+            ...base,
+            zIndex: 9999
         }),
         option: (base, state) => ({
             ...base,
@@ -69,8 +78,14 @@ export default function ProductSettings() {
         fetchProducts();
         if (activeTab === 'orders') {
             fetchUsers();
+        } else if (activeTab === 'pending') {
+            fetchPendingOrders();
         } else if (activeTab === 'processing') {
             fetchProcessingOrders();
+        } else if (activeTab === 'shipped') {
+            fetchShippedOrders();
+        } else if (activeTab === 'delivered') {
+            fetchDeliveredOrders();
         } else if (activeTab === 'cancelled') {
             fetchCancelledOrders();
         }
@@ -115,6 +130,18 @@ export default function ProductSettings() {
         }
     };
 
+    const fetchPendingOrders = async () => {
+        try {
+            const res = await fetch('/api/admin/orders?status=pending', { credentials: 'include' });
+            if (!res.ok) throw new Error('Failed to fetch pending orders');
+            const data = await res.json();
+            setPendingOrders(data);
+        } catch (error) {
+            console.error('Fetch pending orders error:', error);
+            setNotification({ message: 'Failed to load pending orders', type: 'error' });
+        }
+    };
+
     const fetchProcessingOrders = async () => {
         try {
             const res = await fetch('/api/admin/orders?status=processing', { credentials: 'include' });
@@ -124,6 +151,30 @@ export default function ProductSettings() {
         } catch (error) {
             console.error('Fetch processing orders error:', error);
             setNotification({ message: 'Failed to load processing orders', type: 'error' });
+        }
+    };
+
+    const fetchShippedOrders = async () => {
+        try {
+            const res = await fetch('/api/admin/orders?status=shipped', { credentials: 'include' });
+            if (!res.ok) throw new Error('Failed to fetch shipped orders');
+            const data = await res.json();
+            setShippedOrders(data);
+        } catch (error) {
+            console.error('Fetch shipped orders error:', error);
+            setNotification({ message: 'Failed to load shipped orders', type: 'error' });
+        }
+    };
+
+    const fetchDeliveredOrders = async () => {
+        try {
+            const res = await fetch('/api/admin/orders?status=delivered', { credentials: 'include' });
+            if (!res.ok) throw new Error('Failed to fetch delivered orders');
+            const data = await res.json();
+            setDeliveredOrders(data);
+        } catch (error) {
+            console.error('Fetch delivered orders error:', error);
+            setNotification({ message: 'Failed to load delivered orders', type: 'error' });
         }
     };
 
@@ -219,7 +270,35 @@ export default function ProductSettings() {
         }
     };
 
-    const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    const handleUpdateOrderStatus = async (orderId, newStatus, refetchCallback, currentStatus) => {
+        // Prevent reverting from shipped or delivered to earlier statuses
+        if ((currentStatus === 'shipped' || currentStatus === 'delivered') && 
+            (newStatus === 'pending' || newStatus === 'processing')) {
+            setNotification({ 
+                message: 'Cannot revert shipped/delivered orders to pending/processing', 
+                type: 'error' 
+            });
+            return;
+        }
+
+        // Show confirmation for shipped and delivered
+        if (newStatus === 'shipped' || newStatus === 'delivered') {
+            setConfirmModal({
+                orderId,
+                newStatus,
+                refetchCallback,
+                message: newStatus === 'shipped' 
+                    ? 'Mark this order as shipped? Stock will be decremented.'
+                    : 'Mark this order as delivered?'
+            });
+            return;
+        }
+
+        // Update without confirmation for other statuses
+        await updateOrderStatusAPI(orderId, newStatus, refetchCallback);
+    };
+
+    const updateOrderStatusAPI = async (orderId, newStatus, refetchCallback) => {
         try {
             const res = await fetch(`/api/admin/orders/${orderId}/status`, {
                 method: 'PATCH',
@@ -230,12 +309,34 @@ export default function ProductSettings() {
 
             if (!res.ok) throw new Error('Failed to update order status');
             
-            setNotification({ message: 'Order status updated', type: 'success' });
-            fetchOrders();
+            const data = await res.json();
+            setNotification({ 
+                message: data.stockUpdated 
+                    ? 'Order shipped! Stock has been updated.' 
+                    : 'Order status updated', 
+                type: 'success' 
+            });
+            if (refetchCallback) refetchCallback();
+            fetchProducts(); // Refresh product stock display
         } catch (error) {
             console.error('Update order error:', error);
             setNotification({ message: 'Failed to update order', type: 'error' });
         }
+    };
+
+    const handleConfirmStatusChange = async () => {
+        if (confirmModal) {
+            await updateOrderStatusAPI(
+                confirmModal.orderId, 
+                confirmModal.newStatus, 
+                confirmModal.refetchCallback
+            );
+            setConfirmModal(null);
+        }
+    };
+
+    const handleCancelStatusChange = () => {
+        setConfirmModal(null);
     };
 
     if (loading) {
@@ -268,16 +369,34 @@ export default function ProductSettings() {
                         User Orders
                     </button>
                     <button 
+                        className={`ps-tab ${activeTab === 'pending' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('pending')}
+                    >
+                        Pending
+                    </button>
+                    <button 
                         className={`ps-tab ${activeTab === 'processing' ? 'active' : ''}`}
                         onClick={() => setActiveTab('processing')}
                     >
-                        Processing Orders
+                        Processing
+                    </button>
+                    <button 
+                        className={`ps-tab ${activeTab === 'shipped' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('shipped')}
+                    >
+                        Shipped
+                    </button>
+                    <button 
+                        className={`ps-tab ${activeTab === 'delivered' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('delivered')}
+                    >
+                        Delivered
                     </button>
                     <button 
                         className={`ps-tab ${activeTab === 'cancelled' ? 'active' : ''}`}
                         onClick={() => setActiveTab('cancelled')}
                     >
-                        Cancelled Orders
+                        Cancelled
                     </button>
                 </div>
             </div>
@@ -420,11 +539,13 @@ export default function ProductSettings() {
                                                 <td>
                                                     <Select
                                                         value={statusOptions.find(opt => opt.value === order.status)}
-                                                        onChange={(selected) => handleUpdateOrderStatus(order.id, selected.value)}
+                                                        onChange={(selected) => handleUpdateOrderStatus(order.id, selected.value, () => fetchUserOrders(selectedUser.id, selectedUser.username), order.status)}
                                                         options={statusOptions}
                                                         styles={selectStyles}
                                                         className="react-select-container"
                                                         classNamePrefix="react-select"
+                                                        menuPortalTarget={document.body}
+                                                        menuPosition="fixed"
                                                     />
                                                 </td>
                                             </tr>
@@ -438,6 +559,55 @@ export default function ProductSettings() {
                             </div>
                         </div>
                     )}
+                </div>
+            )}
+
+            {activeTab === 'pending' && (
+                <div className="ps-content">
+                    <div className="ps-orders-table">
+                        <h3 className="ps-section-title">Pending Orders</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>User</th>
+                                    <th>Products</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pendingOrders.length > 0 ? pendingOrders.map(order => (
+                                    <tr key={order.id}>
+                                        <td>{order.order_number}</td>
+                                        <td>{order.username}</td>
+                                        <td>{order.products}</td>
+                                        <td>{order.total_quantity}</td>
+                                        <td>${order.total}</td>
+                                        <td>{new Date(order.order_date).toLocaleDateString()}</td>
+                                        <td>
+                                            <Select
+                                                value={statusOptions.find(opt => opt.value === order.status)}
+                                                onChange={(selected) => handleUpdateOrderStatus(order.id, selected.value, fetchPendingOrders, order.status)}
+                                                options={statusOptions}
+                                                styles={selectStyles}
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                menuPortalTarget={document.body}
+                                                menuPosition="fixed"
+                                            />
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan="7" className="no-orders">No pending orders found</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
@@ -469,20 +639,117 @@ export default function ProductSettings() {
                                         <td>
                                             <Select
                                                 value={statusOptions.find(opt => opt.value === order.status)}
-                                                onChange={(selected) => {
-                                                    handleUpdateOrderStatus(order.id, selected.value);
-                                                    fetchProcessingOrders();
-                                                }}
+                                                onChange={(selected) => handleUpdateOrderStatus(order.id, selected.value, fetchProcessingOrders, order.status)}
                                                 options={statusOptions}
                                                 styles={selectStyles}
                                                 className="react-select-container"
                                                 classNamePrefix="react-select"
+                                                menuPortalTarget={document.body}
+                                                menuPosition="fixed"
                                             />
                                         </td>
                                     </tr>
                                 )) : (
                                     <tr>
                                         <td colSpan="7" className="no-orders">No processing orders found</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'shipped' && (
+                <div className="ps-content">
+                    <div className="ps-orders-table">
+                        <h3 className="ps-section-title">Shipped Orders</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>User</th>
+                                    <th>Products</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {shippedOrders.length > 0 ? shippedOrders.map(order => (
+                                    <tr key={order.id}>
+                                        <td>{order.order_number}</td>
+                                        <td>{order.username}</td>
+                                        <td>{order.products}</td>
+                                        <td>{order.total_quantity}</td>
+                                        <td>${order.total}</td>
+                                        <td>{new Date(order.order_date).toLocaleDateString()}</td>
+                                        <td>
+                                            <Select
+                                                value={statusOptions.find(opt => opt.value === order.status)}
+                                                onChange={(selected) => handleUpdateOrderStatus(order.id, selected.value, fetchShippedOrders, order.status)}
+                                                options={statusOptions}
+                                                styles={selectStyles}
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                menuPortalTarget={document.body}
+                                                menuPosition="fixed"
+                                            />
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan="7" className="no-orders">No shipped orders found</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'delivered' && (
+                <div className="ps-content">
+                    <div className="ps-orders-table">
+                        <h3 className="ps-section-title">Delivered Orders</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>User</th>
+                                    <th>Products</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {deliveredOrders.length > 0 ? deliveredOrders.map(order => (
+                                    <tr key={order.id}>
+                                        <td>{order.order_number}</td>
+                                        <td>{order.username}</td>
+                                        <td>{order.products}</td>
+                                        <td>{order.total_quantity}</td>
+                                        <td>${order.total}</td>
+                                        <td>{new Date(order.order_date).toLocaleDateString()}</td>
+                                        <td>
+                                            <Select
+                                                value={statusOptions.find(opt => opt.value === order.status)}
+                                                onChange={(selected) => handleUpdateOrderStatus(order.id, selected.value, fetchDeliveredOrders, order.status)}
+                                                options={statusOptions}
+                                                styles={selectStyles}
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                menuPortalTarget={document.body}
+                                                menuPosition="fixed"
+                                            />
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan="7" className="no-orders">No delivered orders found</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -519,14 +786,13 @@ export default function ProductSettings() {
                                         <td>
                                             <Select
                                                 value={statusOptions.find(opt => opt.value === order.status)}
-                                                onChange={(selected) => {
-                                                    handleUpdateOrderStatus(order.id, selected.value);
-                                                    fetchCancelledOrders();
-                                                }}
+                                                onChange={(selected) => handleUpdateOrderStatus(order.id, selected.value, fetchCancelledOrders, order.status)}
                                                 options={statusOptions}
                                                 styles={selectStyles}
                                                 className="react-select-container"
                                                 classNamePrefix="react-select"
+                                                menuPortalTarget={document.body}
+                                                menuPosition="fixed"
                                             />
                                         </td>
                                     </tr>
@@ -640,6 +906,28 @@ export default function ProductSettings() {
                             </button>
                             <button className="ps-btn ps-btn-delete" onClick={handleDeleteConfirm}>
                                 Delete Product
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Order Status Confirmation Modal */}
+            {confirmModal && (
+                <div className="ps-modal-overlay" onClick={handleCancelStatusChange}>
+                    <div className="ps-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="ps-modal-header">
+                            <h3>Confirm Status Change</h3>
+                        </div>
+                        <div className="ps-modal-body">
+                            <p>{confirmModal.message}</p>
+                        </div>
+                        <div className="ps-modal-actions">
+                            <button className="ps-btn ps-btn-cancel" onClick={handleCancelStatusChange}>
+                                Cancel
+                            </button>
+                            <button className="ps-btn ps-btn-confirm" onClick={handleConfirmStatusChange}>
+                                Confirm
                             </button>
                         </div>
                     </div>

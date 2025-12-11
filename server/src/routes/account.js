@@ -85,17 +85,22 @@ router.post('/deactivate', requireAuth, async (req, res) => {
 		const deactivatedUntil = new Date();
 		deactivatedUntil.setDate(deactivatedUntil.getDate() + days);
 
+		console.log('Deactivating user:', id, 'until:', deactivatedUntil);
+
 		// Update user status
-		await pool.execute(
+		const [result] = await pool.execute(
 			'UPDATE users SET is_active = 0, deactivated_until = ? WHERE id = ?',
 			[deactivatedUntil, id]
 		);
+
+		console.log('Deactivation update result:', result);
 
 		// Clear the authentication cookie to log out the user
 		res.clearCookie('token', { 
 			httpOnly: true, 
 			secure: process.env.NODE_ENV === 'production', 
-			sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax' 
+			sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+			path: '/'
 		});
 
 		return res.json({ 

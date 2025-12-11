@@ -96,6 +96,20 @@
     box-sizing:border-box;
 }
 
+/* Error state for input fields */
+.regiform input.error,
+.regiform .usertextbox.error,
+.regiform .passtextbox.error {
+    border: 2px solid #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    animation: errorPulse 0.5s ease;
+}
+
+@keyframes errorPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
+}
+
 .regiform select {
     cursor: pointer;
     appearance: none;
@@ -216,8 +230,8 @@
 }
 
 .phone-input-wrapper-regiform .react-select-container-regiform {
-    flex: 0 0 160px;
-    min-width: 160px;
+    flex: 0 0 200px;
+    min-width: 200px;
     margin: 0;
     font-size: 13px;
 }
@@ -323,4 +337,211 @@
 .regiform .react-select__option--is-selected {
     background: rgba(74, 158, 255, 0.5) !important;
     font-weight: 600;
+}
+
+/* Success Modal Styles */
+.success-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.success-modal {
+    background: linear-gradient(135deg, rgba(20, 30, 48, 0.95), rgba(36, 59, 85, 0.95));
+    border: 1px solid rgba(74, 158, 255, 0.3);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.4s ease;
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.success-modal-icon {
+    margin: 0 auto 1.5rem;
+    width: 80px;
+    height: 80px;
+}
+
+.success-checkmark {
+    width: 100%;
+    height: 100%;
+    animation: scaleIn 0.5s ease-in-out 0.3s both;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+.success-checkmark-circle {
+    stroke: #4ade80;
+    stroke-width: 2;
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+@keyframes stroke {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.success-checkmark-check {
+    stroke: #4ade80;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+}
+
+.success-modal-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, #4ade80, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.success-modal-message {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.success-modal-button {
+    display: block;
+    width: 100%;
+    padding: 0.875rem 2rem;
+    background: linear-gradient(135deg, #4ade80, #22d3ee);
+    color: #000000;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-bottom: 1rem;
+}
+
+.success-modal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(74, 222, 128, 0.4);
+}
+
+.success-modal-close {
+    display: block;
+    width: 100%;
+    padding: 0.875rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.success-modal-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+/* Input with tooltip wrapper */
+.input-with-tooltip {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Error tooltip styling */
+.error-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Tooltip arrow */
+.error-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #dc2626;
+}
+
+/* Show tooltip on hover */
+.input-with-tooltip:hover .error-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-12px);
+}
+
+/* Also show tooltip when input is focused */
+.input-with-tooltip input:focus ~ .error-tooltip,
+.input-with-tooltip .sf-password-row input:focus ~ .error-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-12px);
+}
+
+/* Error tooltip for password row needs different positioning */
+.input-with-tooltip .sf-password-row {
+    position: relative;
+}
+
+.input-with-tooltip .sf-password-row ~ .error-tooltip {
+    bottom: calc(100% + 10px);
 }

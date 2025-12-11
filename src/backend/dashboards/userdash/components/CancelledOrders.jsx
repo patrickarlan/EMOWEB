@@ -44,7 +44,7 @@ export default function CancelledOrders() {
   };
 
   const formatPrice = (price) => {
-    return `₱${Number(price).toLocaleString('en-US', {
+    return `$${Number(price).toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })}`;

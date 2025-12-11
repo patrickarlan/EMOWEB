@@ -7,6 +7,23 @@ import "./admindash.css";
 
 export default function AdminDash() {
     const [activePanel, setActivePanel] = useState("products");
+    const [userRole, setUserRole] = React.useState(null);
+
+    // Fetch user role on mount
+    React.useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const res = await fetch('/api/auth/me', { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    setUserRole(data.role);
+                }
+            } catch (error) {
+                console.error('Error fetching user role:', error);
+            }
+        };
+        fetchUserRole();
+    }, []);
 
     const handlePanelClick = (panel) => {
         setActivePanel(panel);
@@ -17,6 +34,14 @@ export default function AdminDash() {
             <ADSidebar activePanel={activePanel} setActivePanel={handlePanelClick} />
 
             <main className="admindash-main">
+                {(userRole === 'admin' || userRole === 'super_admin') && (
+                    <div className="dashboard-switcher">
+                        <a href="/userdash" className="btn-switch-dashboard">
+                            <span className="switch-icon">👤</span>
+                            Switch to User Dashboard
+                        </a>
+                    </div>
+                )}
                 <section className="admindash-grid" aria-label="Admin dashboard panels">
                     <article 
                         className={`dash-box ${activePanel === "products" ? "active" : ""}`}

@@ -77,6 +77,9 @@
     border-radius: 12px;
     padding: 1.5rem;
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
 }
 
 .ps-product-card:hover {
@@ -126,6 +129,7 @@
 
 .ps-product-info {
     margin-bottom: 1.5rem;
+    flex: 1;
 }
 
 .ps-info-row {
@@ -162,6 +166,7 @@
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
+    margin-top: auto;
 }
 
 .ps-btn {
@@ -220,13 +225,23 @@
     box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
 }
 
+.ps-btn-confirm {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: #fff;
+}
+
+.ps-btn-confirm:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+}
+
 /* Orders Table */
 .ps-orders-table {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 107, 53, 0.3);
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .ps-orders-table table {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import "./styles/AccountSettings.css";
-import PasswordVerification from "../../../../components/PasswordVerification";
 
-export default function AccountSettings() {
+export default function AccountSettings({ onRequestDeactivation }) {
   const [email, setEmail] = useState("");
   const [passwordData, setPasswordData] = useState({
     oldPassword: "",
@@ -10,11 +10,13 @@ export default function AccountSettings() {
     confirmPassword: ""
   });
   const [deactivateDays, setDeactivateDays] = useState(7);
-  const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
-  const [showPasswordVerification, setShowPasswordVerification] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [passwordErrors, setPasswordErrors] = useState({});
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Fetch user email on component mount
   useEffect(() => {
@@ -50,31 +52,46 @@ export default function AccountSettings() {
       ...prev,
       [name]: value
     }));
+    // Clear error for this field when user starts typing
+    if (passwordErrors[name]) {
+      setPasswordErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setMessage({ type: "", text: "" });
+    const errors = {};
 
     // Validation
-    if (!passwordData.oldPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
-      setMessage({ type: "error", text: "All password fields are required" });
+    if (!passwordData.oldPassword) {
+      errors.oldPassword = "Current password is required";
+    }
+    if (!passwordData.newPassword) {
+      errors.newPassword = "New password is required";
+    } else if (passwordData.newPassword.length < 6) {
+      errors.newPassword = "Password must be at least 6 characters";
+    } else if (passwordData.newPassword === passwordData.oldPassword) {
+      errors.newPassword = "New password must be different from current password";
+    }
+    if (!passwordData.confirmPassword) {
+      errors.confirmPassword = "Please confirm your password";
+    } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setPasswordErrors(errors);
       setSaving(false);
       return;
     }
 
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setMessage({ type: "error", text: "New passwords do not match" });
-      setSaving(false);
-      return;
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      setMessage({ type: "error", text: "New password must be at least 6 characters" });
-      setSaving(false);
-      return;
-    }
+    setPasswordErrors({});
 
     try {
       const response = await fetch("http://localhost:4000/api/account/change-password", {
@@ -96,9 +113,15 @@ export default function AccountSettings() {
           newPassword: "",
           confirmPassword: ""
         });
+        setPasswordErrors({});
       } else {
         const errorData = await response.json();
-        setMessage({ type: "error", text: errorData.error || "Failed to change password" });
+        // Set error on the appropriate field
+        if (errorData.error && errorData.error.toLowerCase().includes('current password')) {
+          setPasswordErrors({ oldPassword: errorData.error });
+        } else {
+          setMessage({ type: "error", text: errorData.error || "Failed to change password" });
+        }
       }
     } catch (error) {
       console.error("Error changing password:", error);
@@ -108,44 +131,11 @@ export default function AccountSettings() {
     }
   };
 
-  const handleDeactivate = async () => {
-    setSaving(true);
-    setMessage({ type: "", text: "" });
-
-    try {
-      const response = await fetch("http://localhost:4000/api/account/deactivate", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          days: deactivateDays
-        })
-      });
-
-      if (response.ok) {
-        setMessage({ type: "success", text: `Account will be deactivated for ${deactivateDays} days` });
-        setShowDeactivateConfirm(false);
-        // Optional: redirect to logout or home page after deactivation
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
-      } else {
-        const errorData = await response.json();
-        setMessage({ type: "error", text: errorData.error || "Failed to deactivate account" });
-      }
-    } catch (error) {
-      console.error("Error deactivating account:", error);
-      setMessage({ type: "error", text: "Network error. Please try again." });
-    } finally {
-      setSaving(false);
+  const handleDeactivationRequest = () => {
+    console.log('Requesting deactivation with days:', deactivateDays);
+    if (onRequestDeactivation) {
+      onRequestDeactivation(deactivateDays);
     }
-  };
-
-  const handlePasswordVerified = () => {
-    setShowPasswordVerification(false);
-    setShowDeactivateConfirm(true);
   };
 
   if (loading) {
@@ -159,13 +149,6 @@ export default function AccountSettings() {
 
   return (
     <>
-      <PasswordVerification
-        isOpen={showPasswordVerification}
-        onClose={() => setShowPasswordVerification(false)}
-        onVerify={handlePasswordVerified}
-        targetSection="Account Deactivation"
-      />
-
       <h3 className="account-title">Account Settings</h3>
       <p className="account-subtitle">Manage your account security and preferences</p>
 
@@ -210,48 +193,93 @@ export default function AccountSettings() {
             <label htmlFor="oldPassword" className="form-label">
               Current Password
             </label>
-            <input
-              type="password"
-              id="oldPassword"
-              name="oldPassword"
-              value={passwordData.oldPassword}
-              onChange={handlePasswordChange}
-              className="form-input"
-              placeholder="Enter current password"
-              required
-            />
+            <div className="input-with-tooltip">
+              <div className="password-input-wrapper">
+                <input
+                  type={showOldPassword ? "text" : "password"}
+                  id="oldPassword"
+                  name="oldPassword"
+                  value={passwordData.oldPassword}
+                  onChange={handlePasswordChange}
+                  className={`form-input ${passwordErrors.oldPassword ? 'error' : ''}`}
+                  placeholder="Enter current password"
+                  autoComplete="off"
+                  data-form-type="other"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowOldPassword(!showOldPassword)}
+                  aria-label={showOldPassword ? "Hide password" : "Show password"}
+                >
+                  {showOldPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              {passwordErrors.oldPassword && <span className="error-tooltip">{passwordErrors.oldPassword}</span>}
+            </div>
           </div>
 
           <div className="form-group">
             <label htmlFor="newPassword" className="form-label">
               New Password
             </label>
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              value={passwordData.newPassword}
-              onChange={handlePasswordChange}
-              className="form-input"
-              placeholder="Enter new password"
-              required
-            />
+            <div className="input-with-tooltip">
+              <div className="password-input-wrapper">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  id="newPassword"
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+                  className={`form-input ${passwordErrors.newPassword ? 'error' : ''}`}
+                  placeholder="Enter new password"
+                  autoComplete="new-password"
+                  data-form-type="other"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  aria-label={showNewPassword ? "Hide password" : "Show password"}
+                >
+                  {showNewPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              {passwordErrors.newPassword && <span className="error-tooltip">{passwordErrors.newPassword}</span>}
+            </div>
           </div>
 
           <div className="form-group">
             <label htmlFor="confirmPassword" className="form-label">
               Confirm New Password
             </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={passwordData.confirmPassword}
-              onChange={handlePasswordChange}
-              className="form-input"
-              placeholder="Confirm new password"
-              required
-            />
+            <div className="input-with-tooltip">
+              <div className="password-input-wrapper">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordChange}
+                  className={`form-input ${passwordErrors.confirmPassword ? 'error' : ''}`}
+                  placeholder="Confirm new password"
+                  autoComplete="new-password"
+                  data-form-type="other"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              {passwordErrors.confirmPassword && <span className="error-tooltip">{passwordErrors.confirmPassword}</span>}
+            </div>
           </div>
 
           <button
@@ -276,51 +304,30 @@ export default function AccountSettings() {
             <label htmlFor="deactivateDays" className="form-label">
               Deactivation Period
             </label>
-            <select
+            <Select
               id="deactivateDays"
-              value={deactivateDays}
-              onChange={(e) => setDeactivateDays(Number(e.target.value))}
-              className="form-input form-select"
-            >
-              <option value={1}>1 Day</option>
-              <option value={3}>3 Days</option>
-              <option value={7}>7 Days</option>
-              <option value={14}>14 Days</option>
-            </select>
+              value={{ value: deactivateDays, label: `${deactivateDays} Day${deactivateDays > 1 ? 's' : ''}` }}
+              onChange={(option) => setDeactivateDays(option.value)}
+              options={[
+                { value: 1, label: '1 Day' },
+                { value: 3, label: '3 Days' },
+                { value: 7, label: '7 Days' },
+                { value: 14, label: '14 Days' }
+              ]}
+              className="react-select-container"
+              classNamePrefix="react-select"
+              isSearchable={false}
+              menuPlacement="top"
+            />
           </div>
 
-          {!showDeactivateConfirm ? (
-            <button
-              type="button"
-              onClick={() => setShowPasswordVerification(true)}
-              className="btn btn-deactivate"
-            >
-              Deactivate Account
-            </button>
-          ) : (
-            <div className="confirm-deactivate">
-              <p className="confirm-text">
-                Are you sure you want to deactivate your account for {deactivateDays} day(s)?
-              </p>
-              <div className="confirm-buttons">
-                <button
-                  type="button"
-                  onClick={handleDeactivate}
-                  disabled={saving}
-                  className="btn btn-confirm-deactivate"
-                >
-                  {saving ? "Deactivating..." : "Yes, Deactivate"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowDeactivateConfirm(false)}
-                  className="btn btn-cancel"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={handleDeactivationRequest}
+            className="btn btn-deactivate"
+          >
+            Deactivate Account
+          </button>
         </div>
       </div>
     </>
