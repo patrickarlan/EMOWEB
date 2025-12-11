@@ -112,14 +112,6 @@ export default function ADSidebar({ activePanel, setActivePanel }) {
               </li>
               <li className="ad-nav-item">
                 <button 
-                  onClick={() => setActivePanel("system")} 
-                  className={`ad-nav-link ${activePanel === "system" ? "active" : ""}`}
-                >
-                  System Management
-                </button>
-              </li>
-              <li className="ad-nav-item">
-                <button 
                   onClick={() => setActivePanel("admin")} 
                   className={`ad-nav-link ${activePanel === "admin" ? "active" : ""}`}
                 >

@@ -86,16 +86,10 @@ export default function AdminDash() {
                                 <AccountSettings />
                             )}
                             {activePanel === "system" && (
-                                <div className="detail-content">
-                                    <h3>System Management</h3>
-                                    <p>Prototype and system management content will appear here.</p>
-                                </div>
+                                <PrototypeDashboard />
                             )}
                             {activePanel === "admin" && (
                                 <AdminProfileSettings />
-                            )}
-                            {activePanel === "prototype" && (
-                                <PrototypeDashboard />
                             )}
                         </div>
                     </section>
