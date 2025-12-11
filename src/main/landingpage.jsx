@@ -81,8 +81,8 @@ export default function LandingPage() {
 				</div>
 				<div className="landing-hero">
 					<p className="hero-pretext">Welcome to <strong>EMOWEB</strong> <br></br>BY LIVING.AI</p>
-					<h2 className="hero-title">EMOWEB: <br></br>Your Robot Companion.</h2>
-					<p className="hero-sub">Advanced AI technology that understands and responds to human emotions, creating meaningful interactions and intelligent companionship.</p>
+					<h2 className="hero-title">EMOWEB: <br></br>Your Robot Companion</h2>
+					<p className="hero-sub">Mini Robot AI technology that understands and responds to human emotions, creating meaningful interactions and intelligent companionship.</p>
 				</div>
 			</div>
 			<div className="landing-wrapper">

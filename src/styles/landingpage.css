@@ -221,7 +221,7 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    text-shadow: 0 6px 20px rgba(30,6,60,0.18);
+    text-shadow: 0 0 6px 20px rgba(30,6,60,0.18);
     animation: gradientShift 6s linear infinite;
 }
 .hero-sub{
