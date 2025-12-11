@@ -14,17 +14,13 @@ export default function Contact() {
             <h3 className="card-title"><span className="gradient">Direct</span> Contact</h3>
             <p className="contact-line"><strong>Phone:</strong> <a href="tel:+639694743114">+63 969 474 3114</a></p>
             <p className="contact-line"><strong>Email:</strong> <a href="mailto:emowebai@gmail.com">emowebai@gmail.com</a></p>
-            <p className="contact-line"><strong>Location:</strong> Pasig City, Philippines</p>
-            <p className="muted">Optional: add an alternate contact person or office hours below</p>
+            <p className="contact-line"><strong>Location:</strong> Shenzhen, China</p>
             <p className="contact-line"><strong>Office hours:</strong> Mon–Fri • 09:00–17:00 (PHT)</p>
-          </div>
-
-          <div className="contact-card">
+          <br></br>
             <h3 className="card-title"><span className="gradient">Connect</span> Online</h3>
             <p className="contact-line"><strong>Twitter:</strong> <a href="https://twitter.com/" target="_blank" rel="noreferrer">@emowebai</a></p>
-            <p className="contact-line"><strong>GitHub:</strong> <a href="https://github.com/your-org/emoweb" target="_blank" rel="noreferrer">github.com/your-org/emoweb</a></p>
+            <p className="contact-line"><strong>GitHub:</strong> <a href="https://github.com/exampleorg/emoweb" target="_blank" rel="noreferrer">github.com/your-org/emoweb</a></p>
             <p className="contact-line"><strong>Docs / Demo:</strong> <a href="#">Documentation & demo</a></p>
-            <p className="muted">Optional: replace links above with your actual channels.</p>
           </div>
 
           <aside className="contact-card contact-form" aria-labelledby="form-heading">

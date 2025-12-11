@@ -8,7 +8,10 @@ export default function AboutUs() {
       <div className="about-inner">
         <div className="kicker">About Us</div>
         <h1 id="about-title" className="about-title">We are <span className="gradient">EMO AI</span></h1>
-        <p className="about-lead">EMO AI is an emotion-aware companion robot that recognizes facial expressions and maps them to natural, pet-like responses. It runs real-time, privacy-first inference on-device, expresses emotion through a compact OLED “face” and gentle movements, and adapts interactions to make human-robot communication feel intuitive, safe, and playful.</p>
+        <p className="about-lead">EMOWEB is a website dedicated for the company Living.AI for emotion-aware companion robot that recognizes 
+          facial expressions and maps them to natural responses. It runs real-time, 
+          privacy-first inference on-device, expresses emotion through a compact OLED “face” 
+          and robotic movements, and adapts interactions to make human-robot communication feel intuitive, safe, and playful.</p>
 
         <div className="about-illustration" aria-hidden="true">
           {/* lightweight inline illustration to avoid extra assets */}
@@ -24,7 +27,7 @@ export default function AboutUs() {
         </div>
           <section className="about-features" aria-label="Features">
             <div className="feature">
-              <p className="feature-text text-right"><strong>Privacy-first on-device inference.</strong> EMO AI performs lightweight emotion classification locally so raw video frames never need to leave the device. This keeps interactions private, reduces latency, and enables reliable offline behavior for sensitive environments.</p>
+              <p className="feature-text text-right"><strong>Privacy-first on-device inference.</strong> EMOWEB performs lightweight emotion classification locally so raw video frames never need to leave the device. This keeps interactions private, reduces latency, and enables reliable offline behavior for sensitive environments.</p>
               <div className="feature-img" aria-hidden="true">
                 <svg viewBox="0 0 64 64" width="160" height="120" xmlns="http://www.w3.org/2000/svg">
                   <rect x="2" y="12" width="60" height="36" rx="6" fill="#0fb7ff" opacity="0.14"/>
@@ -36,7 +39,7 @@ export default function AboutUs() {
             </div>
 
             <div className="feature">
-              <p className="feature-text text-center"><strong>Adaptive, human-like responses.</strong> The system maps detected emotions to expressive OLED animations and motion patterns that are tuned to be warm and non-threatening. EMO AI learns simple preferences over time to make interactions feel more personal.</p>
+              <p className="feature-text text-center"><strong>Adaptive, human-like responses.</strong> The system maps detected emotions to expressive OLED animations and motion patterns that are tuned to be warm and non-threatening. EMOWEB learns simple preferences over time to make interactions feel more personal.</p>
               <div className="feature-img" aria-hidden="true">
                 <svg viewBox="0 0 64 64" width="260" height="195" xmlns="http://www.w3.org/2000/svg">
                   <rect x="6" y="18" width="52" height="28" rx="8" fill="#8b5cf6" opacity="0.14"/>
@@ -54,7 +57,7 @@ export default function AboutUs() {
                   <circle cx="28" cy="26" r="4" fill="#00d1ff" />
                 </svg>
               </div>
-              <p className="feature-text text-left"><strong>Designed for education and research.</strong> EMO AI is lightweight and extensible—ideal for classroom demos, prototyping human-robot interaction studies, and teaching TinyML concepts. It exposes safe telemetry hooks for researchers while remaining simple to deploy.</p>
+              <p className="feature-text text-left"><strong>Designed for education and research.</strong> EMOWEB AI is lightweight and extensible—ideal for classroom demos, and prototyping human-robot interaction studies. It exposes safe telemetry hooks for researchers while remaining simple to deploy.</p>
             </div>
           </section>
       </div>

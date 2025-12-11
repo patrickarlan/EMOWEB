@@ -4,10 +4,13 @@ import "../styles/landingpage.css";
 import emoex from "../pics/EMOEX.png";
 import emoex2 from "../pics/EMOEX2.png";
 import emoex3 from "../pics/EMOEX3.png";
+import BannerCarousel from "../components/Bannercarousel";
+
 
 export default function LandingPage() {
 	const [activePanel, setActivePanel] = useState("website");
 	const navigate = useNavigate();
+	
 
 	const panelContent = {
 		website: {
@@ -67,12 +70,20 @@ export default function LandingPage() {
 		{ id: "manual", label: "User Manual", image: emoex3, color: "third-panel" }
 	];
 
+	const images = [emoex, emoex2, emoex3]; // ⬅ carousel images
+
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-center p-4">
-			<div className="landing-hero">
-				<p className="hero-pretext">Welcome to EMO AI</p>
-				<h2 className="hero-title">EMO AI: <br></br>Your Robot Companion.</h2>
-				<p className="hero-sub">Advanced AI technology that understands and responds to human emotions, creating meaningful interactions and intelligent companionship.</p>
+			{/* Hero Section with Carousel Background */}
+			<div className="hero-carousel-wrapper">
+				<div className="hero-carousel-container">
+					<BannerCarousel images={images} interval={5000} />
+				</div>
+				<div className="landing-hero">
+					<p className="hero-pretext">Welcome to <strong>EMOWEB</strong> <br></br>BY LIVING.AI</p>
+					<h2 className="hero-title">EMOWEB: <br></br>Your Robot Companion.</h2>
+					<p className="hero-sub">Advanced AI technology that understands and responds to human emotions, creating meaningful interactions and intelligent companionship.</p>
+				</div>
 			</div>
 			<div className="landing-wrapper">
 				<div className="left-stack">
