@@ -56,7 +56,7 @@ export default function ProfileSettings() {
 
   const countryCodeOptions = countryCodes.map(country => ({
     value: country.code,
-    label: `${country.flag} ${country.country} | ${country.code}`,
+    label: `${country.flag} ${country.code}`,
     maxLength: country.maxLength
   }));
 
