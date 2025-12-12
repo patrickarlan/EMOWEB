@@ -79,6 +79,10 @@ export default function PrototypeDashboard() {
         socket.on('camera_frame', (data) => {
             setCameraFrame(data.image);
             setCameraActive(true);
+            // Clear error if camera is working
+            if (error === 'Failed to connect to Raspberry Pi device') {
+                setError(null);
+            }
         });
 
         socket.on('music_status', (data) => {
@@ -246,7 +250,7 @@ export default function PrototypeDashboard() {
                                     <div key={log.id} className="emotion-log-item">
                                         <div className="log-header">
                                             <span className="log-emotion">{log.emotion}</span>
-                                            <span className="log-confidence">{log.confidence}%</span>
+                                            <span className="log-confidence">{(Number(log.confidence) / 100).toFixed(2)}%</span>
                                         </div>
                                         <div className="log-details">
                                             <span className="log-time">{log.timestamp}</span>

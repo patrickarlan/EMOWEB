@@ -263,6 +263,7 @@
     height: auto;
     border-radius: 8px;
     object-fit: cover;
+    transform: scaleY(1);
 }
 
 .btn-detect-emotion {
