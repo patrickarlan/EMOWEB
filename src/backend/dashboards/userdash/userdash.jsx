@@ -254,7 +254,7 @@ export default function UserDash() {
                             )}
                             {activePanel === "cart" && <Cart />}
                             {activePanel === "settings" && <AccountSettings onRequestDeactivation={handleRequestDeactivation} />}
-                            {activePanel === "system" && <PrototypeDashboard />}
+                            {activePanel === "prototype" && <PrototypeDashboard />}
                         </div>
                     </section>
                 </section>

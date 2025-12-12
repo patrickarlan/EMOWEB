@@ -144,10 +144,10 @@ export default function USSidebar({ activePanel, setActivePanel }) {
             </li>
             <li className="us-nav-item">
               <button 
-                onClick={() => setActivePanel("system")} 
-                className={`us-nav-link ${activePanel === "system" ? "active" : ""}`}
+                onClick={() => setActivePanel("prototype")} 
+                className={`us-nav-link ${activePanel === "prototype" ? "active" : ""}`}
               >
-                System
+                Prototype
               </button>
             </li>
             <li className="us-nav-divider" aria-hidden />

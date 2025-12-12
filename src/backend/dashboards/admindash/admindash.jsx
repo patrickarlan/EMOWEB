@@ -61,8 +61,8 @@ export default function AdminDash() {
                     </article>
 
                     <article 
-                        className={`dash-box ${activePanel === "system" ? "active" : ""}`}
-                        onClick={() => handlePanelClick("system")}
+                        className={`dash-box ${activePanel === "prototype" ? "active" : ""}`}
+                        onClick={() => handlePanelClick("prototype")}
                     >
                         <h2 className="dash-title">System Management</h2>
                         <p className="dash-desc">Prototype and system management.</p>
@@ -85,7 +85,7 @@ export default function AdminDash() {
                             {activePanel === "accounts" && (
                                 <AccountSettings />
                             )}
-                            {activePanel === "system" && (
+                            {activePanel === "prototype" && (
                                 <PrototypeDashboard />
                             )}
                             {activePanel === "admin" && (

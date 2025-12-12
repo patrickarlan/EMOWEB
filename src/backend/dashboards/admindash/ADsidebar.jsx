@@ -123,7 +123,7 @@ export default function ADSidebar({ activePanel, setActivePanel }) {
                   onClick={() => setActivePanel("prototype")} 
                   className={`ad-nav-link ${activePanel === "prototype" ? "active" : ""}`}
                 >
-                  System
+                  Prototype
                 </button>
               </li>
               <li className="ad-nav-divider" aria-hidden />
